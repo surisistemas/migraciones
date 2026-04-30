@@ -1,0 +1,34 @@
+[
+  {
+    "version": 1,
+    "descripcion": "Schema base — punto de partida",
+    "sql": []
+  },
+  {
+    "version": 2,
+    "descripcion": "Ampliar dolar DECIMAL(10,4) en AF, AFD, contable, rem, rem_d + plazo VARCHAR(20) en AF",
+    "sql": [
+      "ALTER TABLE `af`       MODIFY COLUMN `dolar` DECIMAL(10,4)",
+      "ALTER TABLE `afd`      MODIFY COLUMN `dolar` DECIMAL(10,4)",
+      "ALTER TABLE `contable` MODIFY COLUMN `dolar` DECIMAL(10,4)",
+      "ALTER TABLE `rem`      MODIFY COLUMN `dolar` DECIMAL(10,4)",
+      "ALTER TABLE `rem_d`    MODIFY COLUMN `dolar` DECIMAL(10,4)",
+      "ALTER TABLE `af`       MODIFY COLUMN `plazo` VARCHAR(20)"
+    ]
+  },
+  {
+    "version": 3,
+    "descripcion": "Ampliar dolar DECIMAL(10,4) en mov_caja",
+    "sql": [
+      "ALTER TABLE `mov_caja` MODIFY COLUMN `dolar` DECIMAL(10,4)"
+    ]
+  },
+  {
+    "version": 4,
+    "descripcion": "Corregir ib_porc_921 e ib_porc_917 a DECIMAL(5,2) en acl",
+    "sql": [
+      "ALTER TABLE `acl` MODIFY COLUMN `ib_porc_921` DECIMAL(5,2) NOT NULL DEFAULT '0'",
+      "ALTER TABLE `acl` MODIFY COLUMN `ib_porc_917` DECIMAL(5,2) NOT NULL DEFAULT '0'"
+    ]
+  }
+]
