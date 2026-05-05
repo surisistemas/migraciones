@@ -51,5 +51,21 @@
       "ALTER TABLE `cheques`  ADD COLUMN `ptovta`  DECIMAL(5,0) NULL",
       "ALTER TABLE `cheques`  ADD COLUMN `nro`     DECIMAL(8,0) NULL"
     ]
+  },
+  {
+    "version": 6,
+    "descripcion": "Corregir dolar/plazo en ped, pre, ped_local + agregar fchange en ped, pre, ped_d, pre_d",
+    "sql": [
+      "ALTER TABLE `ped`       MODIFY COLUMN `dolar`   DECIMAL(10,4)",
+      "ALTER TABLE `ped`       MODIFY COLUMN `plazo`   VARCHAR(20)",
+      "ALTER TABLE `ped`       ADD    COLUMN `fchange`  DATETIME(3) NULL",
+      "ALTER TABLE `pre`       MODIFY COLUMN `dolar`   DECIMAL(10,4)",
+      "ALTER TABLE `pre`       MODIFY COLUMN `plazo`   VARCHAR(20)",
+      "ALTER TABLE `pre`       ADD    COLUMN `fchange`  DATETIME(3) NULL",
+      "ALTER TABLE `ped_local` MODIFY COLUMN `dolar`   DECIMAL(10,4)",
+      "ALTER TABLE `ped_local` MODIFY COLUMN `plazo`   VARCHAR(20)",
+      "ALTER TABLE `ped_d`     ADD    COLUMN `fchange`  DATETIME(3) NULL",
+      "ALTER TABLE `pre_d`     ADD    COLUMN `fchange`  DATETIME(3) NULL"
+    ]
   }
 ]
