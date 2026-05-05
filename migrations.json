@@ -67,5 +67,12 @@
       "ALTER TABLE `ped_d`     ADD    COLUMN `fchange`  DATETIME(3) NULL",
       "ALTER TABLE `pre_d`     ADD    COLUMN `fchange`  DATETIME(3) NULL"
     ]
+  },
+  {
+    "version": 7,
+    "descripcion": "Corregir dolar DECIMAL(10,4) en comision",
+    "sql": [
+      "ALTER TABLE `comision` MODIFY COLUMN `dolar` DECIMAL(10,4)"
+    ]
   }
 ]
