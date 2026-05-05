@@ -30,5 +30,26 @@
       "ALTER TABLE `acl` MODIFY COLUMN `ib_porc_921` DECIMAL(5,2) NOT NULL DEFAULT '0'",
       "ALTER TABLE `acl` MODIFY COLUMN `ib_porc_917` DECIMAL(5,2) NOT NULL DEFAULT '0'"
     ]
+  },
+  {
+    "version": 5,
+    "descripcion": "Agregar codfact, ptovta, nro, codigo en tarje, mov_caja, bancos, cheques",
+    "sql": [
+      "ALTER TABLE `tarje`    ADD COLUMN IF NOT EXISTS `codfact` DECIMAL(3,0) NULL",
+      "ALTER TABLE `tarje`    ADD COLUMN IF NOT EXISTS `ptovta`  DECIMAL(5,0) NULL",
+      "ALTER TABLE `tarje`    ADD COLUMN IF NOT EXISTS `nro`     DECIMAL(8,0) NULL",
+      "ALTER TABLE `tarje`    ADD COLUMN IF NOT EXISTS `codigo`  VARCHAR(4)   NULL",
+      "ALTER TABLE `mov_caja` ADD COLUMN IF NOT EXISTS `codfact` DECIMAL(3,0) NULL",
+      "ALTER TABLE `mov_caja` ADD COLUMN IF NOT EXISTS `ptovta`  DECIMAL(5,0) NULL",
+      "ALTER TABLE `mov_caja` ADD COLUMN IF NOT EXISTS `nro`     DECIMAL(8,0) NULL",
+      "ALTER TABLE `mov_caja` ADD COLUMN IF NOT EXISTS `codigo`  VARCHAR(4)   NULL",
+      "ALTER TABLE `bancos`   ADD COLUMN IF NOT EXISTS `codfact` DECIMAL(3,0) NULL",
+      "ALTER TABLE `bancos`   ADD COLUMN IF NOT EXISTS `ptovta`  DECIMAL(5,0) NULL",
+      "ALTER TABLE `bancos`   ADD COLUMN IF NOT EXISTS `nro`     DECIMAL(8,0) NULL",
+      "ALTER TABLE `bancos`   ADD COLUMN IF NOT EXISTS `codigo`  VARCHAR(4)   NULL",
+      "ALTER TABLE `cheques`  ADD COLUMN IF NOT EXISTS `codfact` DECIMAL(3,0) NULL",
+      "ALTER TABLE `cheques`  ADD COLUMN IF NOT EXISTS `ptovta`  DECIMAL(5,0) NULL",
+      "ALTER TABLE `cheques`  ADD COLUMN IF NOT EXISTS `nro`     DECIMAL(8,0) NULL"
+    ]
   }
 ]
