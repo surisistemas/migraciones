@@ -35,21 +35,21 @@
     "version": 5,
     "descripcion": "Agregar codfact, ptovta, nro, codigo en tarje, mov_caja, bancos, cheques",
     "sql": [
-      "ALTER TABLE `tarje`    ADD COLUMN IF NOT EXISTS `codfact` DECIMAL(3,0) NULL",
-      "ALTER TABLE `tarje`    ADD COLUMN IF NOT EXISTS `ptovta`  DECIMAL(5,0) NULL",
-      "ALTER TABLE `tarje`    ADD COLUMN IF NOT EXISTS `nro`     DECIMAL(8,0) NULL",
-      "ALTER TABLE `tarje`    ADD COLUMN IF NOT EXISTS `codigo`  VARCHAR(4)   NULL",
-      "ALTER TABLE `mov_caja` ADD COLUMN IF NOT EXISTS `codfact` DECIMAL(3,0) NULL",
-      "ALTER TABLE `mov_caja` ADD COLUMN IF NOT EXISTS `ptovta`  DECIMAL(5,0) NULL",
-      "ALTER TABLE `mov_caja` ADD COLUMN IF NOT EXISTS `nro`     DECIMAL(8,0) NULL",
-      "ALTER TABLE `mov_caja` ADD COLUMN IF NOT EXISTS `codigo`  VARCHAR(4)   NULL",
-      "ALTER TABLE `bancos`   ADD COLUMN IF NOT EXISTS `codfact` DECIMAL(3,0) NULL",
-      "ALTER TABLE `bancos`   ADD COLUMN IF NOT EXISTS `ptovta`  DECIMAL(5,0) NULL",
-      "ALTER TABLE `bancos`   ADD COLUMN IF NOT EXISTS `nro`     DECIMAL(8,0) NULL",
-      "ALTER TABLE `bancos`   ADD COLUMN IF NOT EXISTS `codigo`  VARCHAR(4)   NULL",
-      "ALTER TABLE `cheques`  ADD COLUMN IF NOT EXISTS `codfact` DECIMAL(3,0) NULL",
-      "ALTER TABLE `cheques`  ADD COLUMN IF NOT EXISTS `ptovta`  DECIMAL(5,0) NULL",
-      "ALTER TABLE `cheques`  ADD COLUMN IF NOT EXISTS `nro`     DECIMAL(8,0) NULL"
+      "ALTER TABLE `tarje`    ADD COLUMN `codfact` DECIMAL(3,0) NULL",
+      "ALTER TABLE `tarje`    ADD COLUMN `ptovta`  DECIMAL(5,0) NULL",
+      "ALTER TABLE `tarje`    ADD COLUMN `nro`     DECIMAL(8,0) NULL",
+      "ALTER TABLE `tarje`    ADD COLUMN `codigo`  VARCHAR(4)   NULL",
+      "ALTER TABLE `mov_caja` ADD COLUMN `codfact` DECIMAL(3,0) NULL",
+      "ALTER TABLE `mov_caja` ADD COLUMN `ptovta`  DECIMAL(5,0) NULL",
+      "ALTER TABLE `mov_caja` ADD COLUMN `nro`     DECIMAL(8,0) NULL",
+      "ALTER TABLE `mov_caja` ADD COLUMN `codigo`  VARCHAR(4)   NULL",
+      "ALTER TABLE `bancos`   ADD COLUMN `codfact` DECIMAL(3,0) NULL",
+      "ALTER TABLE `bancos`   ADD COLUMN `ptovta`  DECIMAL(5,0) NULL",
+      "ALTER TABLE `bancos`   ADD COLUMN `nro`     DECIMAL(8,0) NULL",
+      "ALTER TABLE `bancos`   ADD COLUMN `codigo`  VARCHAR(4)   NULL",
+      "ALTER TABLE `cheques`  ADD COLUMN `codfact` DECIMAL(3,0) NULL",
+      "ALTER TABLE `cheques`  ADD COLUMN `ptovta`  DECIMAL(5,0) NULL",
+      "ALTER TABLE `cheques`  ADD COLUMN `nro`     DECIMAL(8,0) NULL"
     ]
   }
 ]
