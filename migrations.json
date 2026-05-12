@@ -83,5 +83,27 @@
       "ALTER TABLE `bancos`   MODIFY COLUMN `form_nro` VARCHAR(15)",
       "ALTER TABLE `tarje`    MODIFY COLUMN `form_nro` VARCHAR(15)"
     ]
+  },
+  {
+    "version": 9,
+    "descripcion": "Ampliar campos de precio a DECIMAL(15,4) en afd, stock, pre_d, ped_d, rem_d",
+    "sql": [
+      "ALTER TABLE `afd` MODIFY COLUMN `fprec` DECIMAL(15,4)",
+      "ALTER TABLE `afd` MODIFY COLUMN `f_pu` DECIMAL(15,4)",
+      "ALTER TABLE `afd` MODIFY COLUMN `f_lista` DECIMAL(15,4)",
+      "ALTER TABLE `stock` MODIFY COLUMN `plp` DECIMAL(15,4)",
+      "ALTER TABLE `stock` MODIFY COLUMN `pu` DECIMAL(15,4)",
+      "ALTER TABLE `stock` MODIFY COLUMN `lista1` DECIMAL(15,4)",
+      "ALTER TABLE `stock` MODIFY COLUMN `lista2` DECIMAL(15,4)",
+      "ALTER TABLE `stock` MODIFY COLUMN `lista3` DECIMAL(15,4)",
+      "ALTER TABLE `stock` MODIFY COLUMN `lista4` DECIMAL(15,4)",
+      "ALTER TABLE `stock` MODIFY COLUMN `lista5` DECIMAL(15,4)",
+      "ALTER TABLE `stock` MODIFY COLUMN `lista6` DECIMAL(15,4)",
+      "ALTER TABLE `stock` MODIFY COLUMN `lista7` DECIMAL(15,4)",
+      "ALTER TABLE `stock` MODIFY COLUMN `lista8` DECIMAL(15,4)",
+      "ALTER TABLE `pre_d` MODIFY COLUMN `fprec` DECIMAL(15,4)",
+      "ALTER TABLE `ped_d` MODIFY COLUMN `fprec` DECIMAL(15,4)",
+      "ALTER TABLE `rem_d` MODIFY COLUMN `fprec` DECIMAL(15,4)"
+    ]
   }
 ]
