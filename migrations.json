@@ -74,5 +74,14 @@
     "sql": [
       "ALTER TABLE `comision` MODIFY COLUMN `dolar` DECIMAL(10,4)"
     ]
+  },
+  {
+    "version": 8,
+    "descripcion": "Ampliar form_nro a VARCHAR(15) en mov_caja, bancos, tarje",
+    "sql": [
+      "ALTER TABLE `mov_caja` MODIFY COLUMN `form_nro` VARCHAR(15)",
+      "ALTER TABLE `bancos`   MODIFY COLUMN `form_nro` VARCHAR(15)",
+      "ALTER TABLE `tarje`    MODIFY COLUMN `form_nro` VARCHAR(15)"
+    ]
   }
 ]
