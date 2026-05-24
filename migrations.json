@@ -105,5 +105,21 @@
       "ALTER TABLE `ped_d` MODIFY COLUMN `fprec` DECIMAL(15,4)",
       "ALTER TABLE `rem_d` MODIFY COLUMN `fprec` DECIMAL(15,4)"
     ]
+  },
+  {
+    "version": 10,
+    "descripcion": "Agregar tablas rem, rem_d, numem, tarjetas + campos nuevos en numem y tarjetas",
+    "sql": [
+      "ALTER TABLE `numem` ADD COLUMN `nro_cuenta` VARCHAR(22) NULL",
+      "ALTER TABLE `numem` ADD COLUMN `cbu`        VARCHAR(22) NULL",
+      "ALTER TABLE `numem` ADD COLUMN `moneda`     VARCHAR(3)  NULL",
+      "ALTER TABLE `numem` ADD COLUMN `saldo_act`  DECIMAL(15,2) NULL",
+      "ALTER TABLE `numem` ADD COLUMN `activo`     TINYINT(1)  DEFAULT 1",
+      "ALTER TABLE `tarjetas` ADD COLUMN `plazo_acred` DECIMAL(3,0) NULL",
+      "ALTER TABLE `tarjetas` ADD COLUMN `comision`    DECIMAL(5,2) NULL",
+      "ALTER TABLE `tarjetas` ADD COLUMN `tipo`        VARCHAR(1)   NULL",
+      "ALTER TABLE `tarjetas` ADD COLUMN `red`         VARCHAR(10)  NULL",
+      "ALTER TABLE `tarjetas` ADD COLUMN `activo`      TINYINT(1)   DEFAULT 1"
+    ]
   }
 ]
