@@ -121,5 +121,12 @@
       "ALTER TABLE `tarjetas` ADD COLUMN `red`         VARCHAR(10)  NULL",
       "ALTER TABLE `tarjetas` ADD COLUMN `activo`      TINYINT(1)   DEFAULT 1"
     ]
+  },
+  {
+    "version": 11,
+    "descripcion": "Módulo recibos moderno — tablas recibo_cab, recibo_aplica, recibo_cobro",
+    "sql": [
+      "-- Tablas nuevas creadas via schema (CREATE TABLE IF NOT EXISTS) — no requiere ALTER TABLE"
+    ]
   }
 ]
