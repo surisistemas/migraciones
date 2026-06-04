@@ -135,5 +135,51 @@
     "sql": [
       "ALTER TABLE `acl` ADD COLUMN `wasap` VARCHAR(20) NULL"
     ]
+  },
+  {
+    "version": 13,
+    "descripcion": "Agregar columnas de auditoría faltantes en acl, acl2, stock, depo_st, ctacte_d",
+    "sql": [
+      "ALTER TABLE `acl` ADD COLUMN `_sync_estado` tinyint(1) NOT NULL DEFAULT '0'",
+      "ALTER TABLE `acl` ADD COLUMN `_eliminado`   tinyint(1) NOT NULL DEFAULT '0'",
+      "ALTER TABLE `acl` ADD COLUMN `_eliminado_en` datetime(3) DEFAULT NULL",
+      "ALTER TABLE `acl` ADD COLUMN `_uuid` char(36) NOT NULL DEFAULT (uuid())",
+      "ALTER TABLE `acl` ADD COLUMN `_creado_en` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3)",
+      "ALTER TABLE `acl` ADD COLUMN `_modificado_en` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3)",
+      "ALTER TABLE `acl` ADD COLUMN `_origen` varchar(20) NOT NULL DEFAULT 'MIGRADOR'",
+      "ALTER TABLE `acl` ADD COLUMN `_sync_version` int NOT NULL DEFAULT '1'",
+      "ALTER TABLE `acl2` ADD COLUMN `_sync_estado` tinyint(1) NOT NULL DEFAULT '0'",
+      "ALTER TABLE `acl2` ADD COLUMN `_eliminado`   tinyint(1) NOT NULL DEFAULT '0'",
+      "ALTER TABLE `acl2` ADD COLUMN `_eliminado_en` datetime(3) DEFAULT NULL",
+      "ALTER TABLE `acl2` ADD COLUMN `_uuid` char(36) NOT NULL DEFAULT (uuid())",
+      "ALTER TABLE `acl2` ADD COLUMN `_creado_en` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3)",
+      "ALTER TABLE `acl2` ADD COLUMN `_modificado_en` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3)",
+      "ALTER TABLE `acl2` ADD COLUMN `_origen` varchar(20) NOT NULL DEFAULT 'MIGRADOR'",
+      "ALTER TABLE `acl2` ADD COLUMN `_sync_version` int NOT NULL DEFAULT '1'",
+      "ALTER TABLE `stock` ADD COLUMN `_sync_estado` tinyint(1) NOT NULL DEFAULT '0'",
+      "ALTER TABLE `stock` ADD COLUMN `_eliminado`   tinyint(1) NOT NULL DEFAULT '0'",
+      "ALTER TABLE `stock` ADD COLUMN `_eliminado_en` datetime(3) DEFAULT NULL",
+      "ALTER TABLE `stock` ADD COLUMN `_uuid` char(36) NOT NULL DEFAULT (uuid())",
+      "ALTER TABLE `stock` ADD COLUMN `_creado_en` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3)",
+      "ALTER TABLE `stock` ADD COLUMN `_modificado_en` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3)",
+      "ALTER TABLE `stock` ADD COLUMN `_origen` varchar(20) NOT NULL DEFAULT 'MIGRADOR'",
+      "ALTER TABLE `stock` ADD COLUMN `_sync_version` int NOT NULL DEFAULT '1'",
+      "ALTER TABLE `depo_st` ADD COLUMN `_sync_estado` tinyint(1) NOT NULL DEFAULT '0'",
+      "ALTER TABLE `depo_st` ADD COLUMN `_eliminado`   tinyint(1) NOT NULL DEFAULT '0'",
+      "ALTER TABLE `depo_st` ADD COLUMN `_eliminado_en` datetime(3) DEFAULT NULL",
+      "ALTER TABLE `depo_st` ADD COLUMN `_uuid` char(36) NOT NULL DEFAULT (uuid())",
+      "ALTER TABLE `depo_st` ADD COLUMN `_creado_en` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3)",
+      "ALTER TABLE `depo_st` ADD COLUMN `_modificado_en` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3)",
+      "ALTER TABLE `depo_st` ADD COLUMN `_origen` varchar(20) NOT NULL DEFAULT 'MIGRADOR'",
+      "ALTER TABLE `depo_st` ADD COLUMN `_sync_version` int NOT NULL DEFAULT '1'",
+      "ALTER TABLE `ctacte_d` ADD COLUMN `_sync_estado` tinyint(1) NOT NULL DEFAULT '0'",
+      "ALTER TABLE `ctacte_d` ADD COLUMN `_eliminado`   tinyint(1) NOT NULL DEFAULT '0'",
+      "ALTER TABLE `ctacte_d` ADD COLUMN `_eliminado_en` datetime(3) DEFAULT NULL",
+      "ALTER TABLE `ctacte_d` ADD COLUMN `_uuid` char(36) NOT NULL DEFAULT (uuid())",
+      "ALTER TABLE `ctacte_d` ADD COLUMN `_creado_en` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3)",
+      "ALTER TABLE `ctacte_d` ADD COLUMN `_modificado_en` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3)",
+      "ALTER TABLE `ctacte_d` ADD COLUMN `_origen` varchar(20) NOT NULL DEFAULT 'MIGRADOR'",
+      "ALTER TABLE `ctacte_d` ADD COLUMN `_sync_version` int NOT NULL DEFAULT '1'"
+    ]
   }
 ]
