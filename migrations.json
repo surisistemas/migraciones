@@ -128,5 +128,12 @@
     "sql": [
       "-- Tablas nuevas creadas via schema (CREATE TABLE IF NOT EXISTS) — no requiere ALTER TABLE"
     ]
+  },
+  {
+    "version": 12,
+    "descripcion": "Agregar campo wasap en acl",
+    "sql": [
+      "ALTER TABLE `acl` ADD COLUMN `wasap` VARCHAR(20) NULL"
+    ]
   }
 ]
