@@ -186,7 +186,7 @@
     "version": 14,
     "descripcion": "Agregar PK _id a acl2 (tabla sin clave primaria)",
     "sql": [
-      "ALTER TABLE `acl2` ADD COLUMN IF NOT EXISTS `_id` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST"
+      "ALTER TABLE `acl2` ADD COLUMN `_id` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST"
     ]
   }
 ]
