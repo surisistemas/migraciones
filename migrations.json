@@ -181,5 +181,12 @@
       "ALTER TABLE `ctacte_d` ADD COLUMN `_origen` varchar(20) NOT NULL DEFAULT 'MIGRADOR'",
       "ALTER TABLE `ctacte_d` ADD COLUMN `_sync_version` int NOT NULL DEFAULT '1'"
     ]
+  },
+  {
+    "version": 14,
+    "descripcion": "Agregar PK _id a acl2 (tabla sin clave primaria)",
+    "sql": [
+      "ALTER TABLE `acl2` ADD COLUMN IF NOT EXISTS `_id` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST"
+    ]
   }
 ]
