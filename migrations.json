@@ -190,13 +190,11 @@
     ]
   },
   {
-    "version": 15,
-    "descripcion": "Ampliar np_oc en rem y oc_prov/remii en af — campos de OC concatenadas",
+    "version": 16,
+    "descripcion": "Permitir id_recibo NULL en recibo_cobro y recibo_aplica",
     "sql": [
-      "ALTER TABLE `rem` MODIFY COLUMN `np_oc`  VARCHAR(100)",
-      "ALTER TABLE `rem` MODIFY COLUMN `np_oc2` VARCHAR(100)",
-      "ALTER TABLE `af`  MODIFY COLUMN `oc_prov` VARCHAR(100)",
-      "ALTER TABLE `af`  MODIFY COLUMN `remii`   VARCHAR(100)"
+      "ALTER TABLE `recibo_cobro`  MODIFY COLUMN `id_recibo` bigint DEFAULT NULL",
+      "ALTER TABLE `recibo_aplica` MODIFY COLUMN `id_recibo` bigint DEFAULT NULL"
     ]
   }
 ]
