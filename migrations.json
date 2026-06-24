@@ -188,5 +188,15 @@
     "sql": [
       "ALTER TABLE `acl2` ADD COLUMN `_id` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST"
     ]
+  },
+  {
+    "version": 15,
+    "descripcion": "Ampliar np_oc en rem y oc_prov/remii en af — campos de OC concatenadas",
+    "sql": [
+      "ALTER TABLE `rem` MODIFY COLUMN `np_oc`  VARCHAR(100)",
+      "ALTER TABLE `rem` MODIFY COLUMN `np_oc2` VARCHAR(100)",
+      "ALTER TABLE `af`  MODIFY COLUMN `oc_prov` VARCHAR(100)",
+      "ALTER TABLE `af`  MODIFY COLUMN `remii`   VARCHAR(100)"
+    ]
   }
 ]
