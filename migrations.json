@@ -196,5 +196,12 @@
       "ALTER TABLE `recibo_cobro`  MODIFY COLUMN `id_recibo` bigint DEFAULT NULL",
       "ALTER TABLE `recibo_aplica` MODIFY COLUMN `id_recibo` bigint DEFAULT NULL"
     ]
-  }
+  },
+  {
+    "version": 17,
+    "descripcion": "Ampliar tipo a VARCHAR(5) en recibo_cab",
+    "sql": [
+        "ALTER TABLE `recibo_cab` MODIFY COLUMN `tipo` VARCHAR(5)"
+    ]
+}
 ]
