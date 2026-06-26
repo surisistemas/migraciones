@@ -203,5 +203,12 @@
     "sql": [
         "ALTER TABLE `recibo_cab` MODIFY COLUMN `tipo` VARCHAR(5)"
     ]
+ },
+{
+    "version": 18,
+    "descripcion": "Ampliar fnfact a VARCHAR(30) en recibo_aplica",
+    "sql": [
+        "ALTER TABLE `recibo_aplica` MODIFY COLUMN `fnfact` VARCHAR(30)"
+    ]
 }
 ]
