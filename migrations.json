@@ -190,6 +190,16 @@
     ]
   },
   {
+    "version": 15,
+    "descripcion": "Ampliar np_oc en rem y oc_prov/remii en af — campos de OC concatenadas",
+    "sql": [
+      "ALTER TABLE `rem` MODIFY COLUMN `np_oc`  VARCHAR(100)",
+      "ALTER TABLE `rem` MODIFY COLUMN `np_oc2` VARCHAR(100)",
+      "ALTER TABLE `af`  MODIFY COLUMN `oc_prov` VARCHAR(100)",
+      "ALTER TABLE `af`  MODIFY COLUMN `remii`   VARCHAR(100)"
+    ]
+  },
+  {
     "version": 16,
     "descripcion": "Permitir id_recibo NULL en recibo_cobro y recibo_aplica",
     "sql": [
@@ -201,14 +211,21 @@
     "version": 17,
     "descripcion": "Ampliar tipo a VARCHAR(5) en recibo_cab",
     "sql": [
-        "ALTER TABLE `recibo_cab` MODIFY COLUMN `tipo` VARCHAR(5)"
+      "ALTER TABLE `recibo_cab` MODIFY COLUMN `tipo` VARCHAR(5)"
     ]
- },
-{
+  },
+  {
     "version": 18,
     "descripcion": "Ampliar fnfact a VARCHAR(30) en recibo_aplica",
     "sql": [
-        "ALTER TABLE `recibo_aplica` MODIFY COLUMN `fnfact` VARCHAR(30)"
+      "ALTER TABLE `recibo_aplica` MODIFY COLUMN `fnfact` VARCHAR(30)"
     ]
-}
+  },
+  {
+    "version": 19,
+    "descripcion": "Permitir identify NULL en ctacte_h",
+    "sql": [
+      "ALTER TABLE `ctacte_h` MODIFY COLUMN `identify` bigint DEFAULT NULL"
+    ]
+  }
 ]
