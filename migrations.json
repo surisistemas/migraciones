@@ -191,7 +191,7 @@
   },
   {
     "version": 15,
-    "descripcion": "Ampliar np_oc en rem y oc_prov/remii en af — campos de OC concatenadas",
+    "descripcion": "Ampliar np_oc en rem y oc_prov/remii en af",
     "sql": [
       "ALTER TABLE `rem` MODIFY COLUMN `np_oc`  VARCHAR(100)",
       "ALTER TABLE `rem` MODIFY COLUMN `np_oc2` VARCHAR(100)",
@@ -226,6 +226,14 @@
     "descripcion": "Permitir identify NULL en ctacte_h",
     "sql": [
       "ALTER TABLE `ctacte_h` MODIFY COLUMN `identify` bigint DEFAULT NULL"
+    ]
+  },
+  {
+    "version": 20,
+    "descripcion": "Ampliar obs y detalle en mstock",
+    "sql": [
+      "ALTER TABLE `mstock` MODIFY COLUMN `obs`     VARCHAR(100)",
+      "ALTER TABLE `mstock` MODIFY COLUMN `detalle` VARCHAR(100)"
     ]
   }
 ]
