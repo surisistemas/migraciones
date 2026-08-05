@@ -191,49 +191,10 @@
   },
   {
     "version": 15,
-    "descripcion": "Ampliar np_oc en rem y oc_prov/remii en af",
+    "descripcion": "Crear tablas ped_web_pagos y ped_web_meta para cobros y metadatos de pedidos web",
     "sql": [
-      "ALTER TABLE `rem` MODIFY COLUMN `np_oc`  VARCHAR(100)",
-      "ALTER TABLE `rem` MODIFY COLUMN `np_oc2` VARCHAR(100)",
-      "ALTER TABLE `af`  MODIFY COLUMN `oc_prov` VARCHAR(100)",
-      "ALTER TABLE `af`  MODIFY COLUMN `remii`   VARCHAR(100)"
-    ]
-  },
-  {
-    "version": 16,
-    "descripcion": "Permitir id_recibo NULL en recibo_cobro y recibo_aplica",
-    "sql": [
-      "ALTER TABLE `recibo_cobro`  MODIFY COLUMN `id_recibo` bigint DEFAULT NULL",
-      "ALTER TABLE `recibo_aplica` MODIFY COLUMN `id_recibo` bigint DEFAULT NULL"
-    ]
-  },
-  {
-    "version": 17,
-    "descripcion": "Ampliar tipo a VARCHAR(5) en recibo_cab",
-    "sql": [
-      "ALTER TABLE `recibo_cab` MODIFY COLUMN `tipo` VARCHAR(5)"
-    ]
-  },
-  {
-    "version": 18,
-    "descripcion": "Ampliar fnfact a VARCHAR(30) en recibo_aplica",
-    "sql": [
-      "ALTER TABLE `recibo_aplica` MODIFY COLUMN `fnfact` VARCHAR(30)"
-    ]
-  },
-  {
-    "version": 19,
-    "descripcion": "Permitir identify NULL en ctacte_h",
-    "sql": [
-      "ALTER TABLE `ctacte_h` MODIFY COLUMN `identify` bigint DEFAULT NULL"
-    ]
-  },
-  {
-    "version": 20,
-    "descripcion": "Ampliar obs y detalle en mstock",
-    "sql": [
-      "ALTER TABLE `mstock` MODIFY COLUMN `obs`     VARCHAR(100)",
-      "ALTER TABLE `mstock` MODIFY COLUMN `detalle` VARCHAR(100)"
+      "CREATE TABLE IF NOT EXISTS `ped_web_pagos` (\n  `id` int NOT NULL AUTO_INCREMENT,\n  `id_ped` int NOT NULL,\n  `ml_order_id` varchar(50) DEFAULT NULL,\n  `payment_id` varchar(50) NOT NULL,\n  `origen` varchar(20) DEFAULT 'ML',\n  `forma_pago_cod` varchar(10) DEFAULT 'ML',\n  `metodo_pago` varchar(50) DEFAULT NULL,\n  `tarjeta_banco` varchar(50) DEFAULT NULL,\n  `cuotas` int DEFAULT 1,\n  `monto_bruto` decimal(12,2) NOT NULL,\n  `comision_pasarela` decimal(10,2) DEFAULT 0.00,\n  `impuestos_pasarela` decimal(10,2) DEFAULT 0.00,\n  `monto_neto` decimal(12,2) NOT NULL,\n  `estado_pago` varchar(20) DEFAULT 'approved',\n  `fecha_cobro` datetime DEFAULT NULL,\n  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,\n  PRIMARY KEY (`id`),\n  KEY `idx_ped` (`id_ped`),\n  KEY `idx_payment` (`payment_id`),\n  KEY `idx_ml_order` (`ml_order_id`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci",
+      "CREATE TABLE IF NOT EXISTS `ped_web_meta` (\n  `id` int NOT NULL AUTO_INCREMENT,\n  `id_ped` int NOT NULL,\n  `order_id` varchar(50) DEFAULT NULL,\n  `comprador_nickname` varchar(100) DEFAULT NULL,\n  `comprador_telefono` varchar(50) DEFAULT NULL,\n  `envio_calle` varchar(255) DEFAULT NULL,\n  `envio_cp` varchar(20) DEFAULT NULL,\n  `envio_localidad` varchar(100) DEFAULT NULL,\n  `envio_provincia` varchar(100) DEFAULT NULL,\n  `carrier_nombre` varchar(100) DEFAULT NULL,\n  `tracking_id` varchar(100) DEFAULT NULL,\n  `meta_key` varchar(50) DEFAULT NULL,\n  `meta_value` text DEFAULT NULL,\n  `raw_payload` json DEFAULT NULL,\n  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,\n  PRIMARY KEY (`id`),\n  KEY `idx_ped` (`id_ped`),\n  KEY `idx_order` (`order_id`),\n  KEY `idx_key` (`meta_key`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
     ]
   }
 ]
