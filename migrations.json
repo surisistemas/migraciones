@@ -260,5 +260,19 @@
     "sql": [
       "ALTER TABLE `afd` MODIFY COLUMN `fdesc` VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL"
     ]
+  },
+  {
+    "version": 24,
+    "descripcion": "Ampliar detalle a VARCHAR(255) en mov_caja — nombres de clientes/proveedores largos",
+    "sql": [
+      "ALTER TABLE `mov_caja` MODIFY COLUMN `detalle` VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL"
+    ]
+  },
+  {
+    "version": 25,
+    "descripcion": "Crear tabla apr — saldos de cuentas corrientes de proveedores (acreedores)",
+    "sql": [
+      "CREATE TABLE IF NOT EXISTS `apr` (\n  `codigo`     VARCHAR(10)    NOT NULL,\n  `saldo_cc`   DECIMAL(15,2)  NOT NULL DEFAULT 0.00,\n  `update_at`  DATETIME       NULL,\n  PRIMARY KEY (`codigo`),\n  INDEX `idx_codigo` (`codigo`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+    ]
   }
 ]
