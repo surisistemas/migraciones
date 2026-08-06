@@ -274,5 +274,13 @@
     "sql": [
       "CREATE TABLE IF NOT EXISTS `apr` (\n  `codigo`     VARCHAR(10)    NOT NULL,\n  `saldo_cc`   DECIMAL(15,2)  NOT NULL DEFAULT 0.00,\n  `update_at`  DATETIME       NULL,\n  PRIMARY KEY (`codigo`),\n  INDEX `idx_codigo` (`codigo`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
     ]
+  },
+  {
+    "version": 26,
+    "descripcion": "Corregir UNIQUE KEY en ped_d_local: (id_web) → (id_web, item) para soportar múltiples ítems por pedido",
+    "sql": [
+      "ALTER TABLE `ped_d_local` DROP INDEX `uk_id_web_det`",
+      "ALTER TABLE `ped_d_local` ADD UNIQUE KEY `uk_id_web_det` (`id_web`, `item`)"
+    ]
   }
 ]
