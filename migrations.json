@@ -282,5 +282,14 @@
       "ALTER TABLE `ped_d_local` DROP INDEX `uk_id_web_det`",
       "ALTER TABLE `ped_d_local` ADD UNIQUE KEY `uk_id_web_det` (`id_web`, `item`)"
     ]
+  },
+  {
+    "version": 27,
+    "descripcion": "Fix ped_web_pagos: monto_neto nullable, UNIQUE KEY (id_ped, payment_id)",
+    "sql": [
+      "ALTER TABLE `ped_web_pagos` MODIFY COLUMN `monto_neto` DECIMAL(12,2) NULL DEFAULT 0.00",
+      "ALTER TABLE `ped_web_pagos` MODIFY COLUMN `monto_bruto` DECIMAL(12,2) NULL DEFAULT 0.00",
+      "ALTER TABLE `ped_web_pagos` ADD UNIQUE KEY `uk_ped_payment` (`id_ped`, `payment_id`)"
+    ]
   }
 ]
