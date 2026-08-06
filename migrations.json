@@ -248,10 +248,10 @@
     "version": 22,
     "descripcion": "Agregar columnas de tracking _sync_estado/_eliminado en ped_web_pagos y ped_web_meta (tablas DOWN — default 1 = ya sincronizado, no requiere subida)",
     "sql": [
-      "ALTER TABLE `ped_web_pagos` ADD COLUMN IF NOT EXISTS `_sync_estado` tinyint(1) NOT NULL DEFAULT '1'",
-      "ALTER TABLE `ped_web_pagos` ADD COLUMN IF NOT EXISTS `_eliminado`   tinyint(1) NOT NULL DEFAULT '0'",
-      "ALTER TABLE `ped_web_meta`  ADD COLUMN IF NOT EXISTS `_sync_estado` tinyint(1) NOT NULL DEFAULT '1'",
-      "ALTER TABLE `ped_web_meta`  ADD COLUMN IF NOT EXISTS `_eliminado`   tinyint(1) NOT NULL DEFAULT '0'"
+      "ALTER TABLE `ped_web_pagos` ADD COLUMN `_sync_estado` tinyint(1) NOT NULL DEFAULT '1'",
+      "ALTER TABLE `ped_web_pagos` ADD COLUMN `_eliminado`   tinyint(1) NOT NULL DEFAULT '0'",
+      "ALTER TABLE `ped_web_meta`  ADD COLUMN `_sync_estado` tinyint(1) NOT NULL DEFAULT '1'",
+      "ALTER TABLE `ped_web_meta`  ADD COLUMN `_eliminado`   tinyint(1) NOT NULL DEFAULT '0'"
     ]
   }
 ]
