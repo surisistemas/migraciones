@@ -253,5 +253,12 @@
       "ALTER TABLE `ped_web_meta`  ADD COLUMN `_sync_estado` tinyint(1) NOT NULL DEFAULT '1'",
       "ALTER TABLE `ped_web_meta`  ADD COLUMN `_eliminado`   tinyint(1) NOT NULL DEFAULT '0'"
     ]
+  },
+  {
+    "version": 23,
+    "descripcion": "Ampliar fdesc a VARCHAR(255) en afd — descripciones largas de artículos",
+    "sql": [
+      "ALTER TABLE `afd` MODIFY COLUMN `fdesc` VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL"
+    ]
   }
 ]
