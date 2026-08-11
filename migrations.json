@@ -291,5 +291,13 @@
       "ALTER TABLE `ped_web_pagos` MODIFY COLUMN `monto_bruto` DECIMAL(12,2) NULL DEFAULT 0.00",
       "ALTER TABLE `ped_web_pagos` ADD UNIQUE KEY `uk_ped_payment` (`id_ped`, `payment_id`)"
     ]
+  },
+  {
+    "version": 28,
+    "descripcion": "Agregar migrado y update_at en ped_local para UP sync de pedidos",
+    "sql": [
+      "ALTER TABLE `ped_local` ADD COLUMN `migrado`   INT      NULL DEFAULT 0",
+      "ALTER TABLE `ped_local` ADD COLUMN `update_at` DATETIME NULL"
+    ]
   }
 ]
