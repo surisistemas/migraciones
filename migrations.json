@@ -299,5 +299,18 @@
       "ALTER TABLE `ped_local` ADD COLUMN `migrado`   INT      NULL DEFAULT 0",
       "ALTER TABLE `ped_local` ADD COLUMN `update_at` DATETIME NULL"
     ]
+  },
+  {
+    "version": 29,
+    "descripcion": "Agregar columnas de auditoría en ctacte_h (_sync_estado, _eliminado, update_at)",
+    "sql": [
+      "ALTER TABLE `ctacte_h` ADD COLUMN `_sync_estado`   tinyint(1)   NOT NULL DEFAULT '0'",
+      "ALTER TABLE `ctacte_h` ADD COLUMN `_eliminado`     tinyint(1)   NOT NULL DEFAULT '0'",
+      "ALTER TABLE `ctacte_h` ADD COLUMN `_eliminado_en`  datetime(3)  DEFAULT NULL",
+      "ALTER TABLE `ctacte_h` ADD COLUMN `update_at`      datetime     NULL",
+      "ALTER TABLE `ctacte_h` ADD COLUMN `_uuid`          char(36)     NOT NULL DEFAULT (uuid())",
+      "ALTER TABLE `ctacte_h` ADD COLUMN `_modificado_en` datetime(3)  NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3)",
+      "ALTER TABLE `ctacte_h` ADD COLUMN `_origen`        varchar(20)  NOT NULL DEFAULT 'MIGRADOR'"
+    ]
   }
 ]
