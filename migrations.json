@@ -302,7 +302,7 @@
   },
   {
     "version": 29,
-    "descripcion": "Agregar columnas de auditoría en ctacte_h (_sync_estado, _eliminado, update_at)",
+    "descripcion": "Agregar columnas de auditoria en ctacte_h (_sync_estado, _eliminado, update_at)",
     "sql": [
       "ALTER TABLE `ctacte_h` ADD COLUMN `_sync_estado`   tinyint(1)   NOT NULL DEFAULT '0'",
       "ALTER TABLE `ctacte_h` ADD COLUMN `_eliminado`     tinyint(1)   NOT NULL DEFAULT '0'",
@@ -311,6 +311,18 @@
       "ALTER TABLE `ctacte_h` ADD COLUMN `_uuid`          char(36)     NOT NULL DEFAULT (uuid())",
       "ALTER TABLE `ctacte_h` ADD COLUMN `_modificado_en` datetime(3)  NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3)",
       "ALTER TABLE `ctacte_h` ADD COLUMN `_origen`        varchar(20)  NOT NULL DEFAULT 'MIGRADOR'"
+    ]
+  },
+  {
+    "version": 30,
+    "descripcion": "Ampliar columnas de texto en af — locali/direc/nombre a 100, remii/oc_prov a 200",
+    "sql": [
+      "ALTER TABLE `af` MODIFY COLUMN `locali`  VARCHAR(100)",
+      "ALTER TABLE `af` MODIFY COLUMN `direc`   VARCHAR(100)",
+      "ALTER TABLE `af` MODIFY COLUMN `nombre`  VARCHAR(100)",
+      "ALTER TABLE `af`     MODIFY COLUMN `remii`   VARCHAR(200)",
+      "ALTER TABLE `af`     MODIFY COLUMN `oc_prov` VARCHAR(200)",
+      "ALTER TABLE `mstock` MODIFY COLUMN `motivo`  VARCHAR(20)"
     ]
   }
 ]
