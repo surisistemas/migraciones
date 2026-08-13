@@ -324,5 +324,47 @@
       "ALTER TABLE `af`     MODIFY COLUMN `oc_prov` VARCHAR(200)",
       "ALTER TABLE `mstock` MODIFY COLUMN `motivo`  VARCHAR(20)"
     ]
+  },
+  {
+    "version": 31,
+    "descripcion": "Agregar reib_924 y p_reib_924 en af — jurisdicción IB 924 (estaban en schema.sql pero faltaba la migración)",
+    "sql": [
+      "ALTER TABLE `af` ADD COLUMN `reib_924`   DECIMAL(12,2) NULL DEFAULT NULL AFTER `p_reib_914`",
+      "ALTER TABLE `af` ADD COLUMN `p_reib_924` DECIMAL(6,2)  NULL DEFAULT NULL AFTER `reib_924`"
+    ]
+  },
+  {
+    "version": 32,
+    "descripcion": "Agregar columnas faltantes en rem/rem_d (nunca creadas por el migrador base) + uniformar anchos de texto (fdesc/nombre/obs) entre af/ped/pre/rem para evitar el mismo incidente de truncamiento que tuvimos en afd.fdesc",
+    "sql": [
+      "ALTER TABLE `rem` ADD COLUMN IF NOT EXISTS `cuit`      VARCHAR(13) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL",
+      "ALTER TABLE `rem` ADD COLUMN IF NOT EXISTS `pos`       VARCHAR(2)  CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL",
+      "ALTER TABLE `rem` ADD COLUMN IF NOT EXISTS `cod_vend`  VARCHAR(4)  CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL",
+      "ALTER TABLE `rem` ADD COLUMN IF NOT EXISTS `cod_zona`  VARCHAR(4)  CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL",
+      "ALTER TABLE `rem` ADD COLUMN IF NOT EXISTS `np_oc`     VARCHAR(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL",
+      "ALTER TABLE `rem` ADD COLUMN IF NOT EXISTS `np_oc2`    VARCHAR(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL",
+      "ALTER TABLE `rem` ADD COLUMN IF NOT EXISTS `valor`     DECIMAL(12,2) DEFAULT NULL",
+      "ALTER TABLE `rem` ADD COLUMN IF NOT EXISTS `cod_trans` VARCHAR(4)  CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL",
+      "ALTER TABLE `rem` ADD COLUMN IF NOT EXISTS `pendi`     VARCHAR(1)  CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL",
+      "ALTER TABLE `rem` ADD COLUMN IF NOT EXISTS `pesot`     DECIMAL(8,3) DEFAULT NULL",
+      "ALTER TABLE `rem` ADD COLUMN IF NOT EXISTS `bultos`    DECIMAL(8,0) DEFAULT NULL",
+      "ALTER TABLE `rem` ADD COLUMN IF NOT EXISTS `precrd`    DECIMAL(1,0) DEFAULT NULL",
+      "ALTER TABLE `rem_d` ADD COLUMN IF NOT EXISTS `menos`        DECIMAL(6,0) DEFAULT NULL",
+      "ALTER TABLE `rem_d` ADD COLUMN IF NOT EXISTS `texva`        VARCHAR(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL",
+      "ALTER TABLE `rem_d` ADD COLUMN IF NOT EXISTS `texva2`       VARCHAR(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL",
+      "ALTER TABLE `rem_d` ADD COLUMN IF NOT EXISTS `pendi`        VARCHAR(1)  CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL",
+      "ALTER TABLE `rem_d` ADD COLUMN IF NOT EXISTS `pais`         VARCHAR(3)  CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL",
+      "ALTER TABLE `rem_d` ADD COLUMN IF NOT EXISTS `nro_despacho` VARCHAR(16) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL",
+      "ALTER TABLE `ped_d` MODIFY COLUMN `fdesc` VARCHAR(255)",
+      "ALTER TABLE `pre_d` MODIFY COLUMN `fdesc` VARCHAR(255)",
+      "ALTER TABLE `rem_d` MODIFY COLUMN `fdesc` VARCHAR(255)",
+      "ALTER TABLE `af`  MODIFY COLUMN `nombre` VARCHAR(150)",
+      "ALTER TABLE `ped` MODIFY COLUMN `nombre` VARCHAR(150)",
+      "ALTER TABLE `pre` MODIFY COLUMN `nombre` VARCHAR(150)",
+      "ALTER TABLE `mstock`  MODIFY COLUMN `obs`    VARCHAR(150)",
+      "ALTER TABLE `af_obs`  MODIFY COLUMN `obs`    VARCHAR(150)",
+      "ALTER TABLE `stock`   MODIFY COLUMN `st_obs` VARCHAR(150)",
+      "ALTER TABLE `rem`     MODIFY COLUMN `obs`    VARCHAR(150)"
+    ]
   }
 ]
