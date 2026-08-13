@@ -367,5 +367,40 @@
       "ALTER TABLE `stock`   MODIFY COLUMN `st_obs` VARCHAR(150)",
       "ALTER TABLE `rem`     MODIFY COLUMN `obs`    VARCHAR(150)"
     ]
+  },
+  {
+    "version": 33,
+    "descripcion": "Portar a migrations.json lo que hacia el boton VerificaMysql (db_update_improved.prg): columnas de ACL/STOCK/CTACTE_D/CTACTE_H, tablas metodos_pago/mail_logs y el procedimiento ObtenerDatos (usado por comparativaprecios). Se reemplaza el boton para que llame solo a AplicarMigraciones().",
+    "sql": [
+      "ALTER TABLE `acl` ADD COLUMN `cod_vend2` CHAR(4) DEFAULT NULL",
+      "ALTER TABLE `acl` MODIFY COLUMN `cod_vend2` CHAR(4) DEFAULT NULL",
+      "ALTER TABLE `acl` ADD COLUMN `IB_PORC_924` DECIMAL(16,4) DEFAULT NULL",
+      "ALTER TABLE `acl` MODIFY COLUMN `IB_PORC_924` DECIMAL(16,4) DEFAULT NULL",
+      "ALTER TABLE `acl` ADD COLUMN `C_MIN` DECIMAL(16,4) DEFAULT NULL",
+      "ALTER TABLE `acl` MODIFY COLUMN `C_MIN` DECIMAL(16,4) DEFAULT NULL",
+      "ALTER TABLE `acl` ADD COLUMN `IB_EXEN_924` BIT(1) DEFAULT NULL",
+      "ALTER TABLE `acl` MODIFY COLUMN `IB_EXEN_924` BIT(1) DEFAULT NULL",
+      "ALTER TABLE `acl` ADD COLUMN `w_user` CHAR(50) DEFAULT NULL",
+      "ALTER TABLE `acl` MODIFY COLUMN `w_user` CHAR(50) DEFAULT NULL",
+      "ALTER TABLE `acl` ADD COLUMN `id_acl` CHAR(4) DEFAULT NULL",
+      "ALTER TABLE `acl` MODIFY COLUMN `id_acl` CHAR(4) DEFAULT NULL",
+      "ALTER TABLE `stock` ADD COLUMN `QI` DECIMAL(20,6) DEFAULT NULL",
+      "ALTER TABLE `stock` MODIFY COLUMN `QI` DECIMAL(20,6) DEFAULT NULL",
+      "ALTER TABLE `stock` MODIFY COLUMN `PU` DECIMAL(16,4) DEFAULT NULL",
+      "ALTER TABLE `stock` ADD COLUMN `Desc_Fin` DECIMAL(4,2) DEFAULT NULL",
+      "ALTER TABLE `stock` MODIFY COLUMN `Desc_Fin` DECIMAL(4,2) DEFAULT NULL",
+      "ALTER TABLE `ctacte_d` ADD COLUMN `DOLAR` DECIMAL(20,4) DEFAULT NULL",
+      "ALTER TABLE `ctacte_d` MODIFY COLUMN `DOLAR` DECIMAL(20,4) DEFAULT NULL",
+      "ALTER TABLE `ctacte_d` ADD COLUMN `cod_vend2` CHAR(4) DEFAULT NULL",
+      "ALTER TABLE `ctacte_d` MODIFY COLUMN `cod_vend2` CHAR(4) DEFAULT NULL",
+      "ALTER TABLE `ctacte_d` ADD COLUMN `COMI_REG2` DECIMAL(12,4) DEFAULT NULL",
+      "ALTER TABLE `ctacte_d` MODIFY COLUMN `COMI_REG2` DECIMAL(12,4) DEFAULT NULL",
+      "ALTER TABLE `ctacte_h` ADD COLUMN `DOLAR` DECIMAL(12,4) DEFAULT NULL",
+      "ALTER TABLE `ctacte_h` MODIFY COLUMN `DOLAR` DECIMAL(12,4) DEFAULT NULL",
+      "CREATE TABLE IF NOT EXISTS metodos_pago (id_metodo_pago INT AUTO_INCREMENT PRIMARY KEY, descripcion VARCHAR(50) NOT NULL, activo BIT(1) DEFAULT 1, fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP, KEY idx_activo (activo)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci",
+      "CREATE TABLE IF NOT EXISTS mail_logs (id BIGINT AUTO_INCREMENT PRIMARY KEY, created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, status VARCHAR(16) NOT NULL, error_msg TEXT NULL, mail_from VARCHAR(255) NULL, mail_to TEXT NULL, mail_cc TEXT NULL, mail_bcc TEXT NULL, subject VARCHAR(512) NULL, body LONGTEXT NULL, attachments TEXT NULL, smtp_server VARCHAR(255) NULL, smtp_port INT NOT NULL DEFAULT 0, smtp_ssl TINYINT(1) NOT NULL DEFAULT 0, duration_ms INT NOT NULL DEFAULT 0, KEY idx_created (created_at), KEY idx_status (status)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci",
+      "DROP PROCEDURE IF EXISTS `ObtenerDatos`",
+      "CREATE PROCEDURE `ObtenerDatos`()\nBEGIN\n    SELECT \n        b.codigo AS cod_modelo, \n        b.nombre AS Modelo, \n        c.id_stock AS cod, \n        s.mat,\n        s.marca,\n        s.moneda,\n        s.plp AS PLP,\n        s.por_prov AS Desc1, \n        s.por_prov2 AS desc2,\n        s.por_prov3 AS Desc3, \n        s.por_prov4 AS desc4,\n        s.pu AS Costo,\n        s.lista1 AS Lista1,\n        s.lista2 AS Lista2,\n        s.lista3 AS Lista3,\n        s.lista4 AS Lista4,\n        s.lista5 AS Lista5,\n        s.lista6 AS Lista6,\n        s.lista7 AS Lista7,\n        s.lista8 AS Lista8\n    FROM \n        modelos_codigos c\n    INNER JOIN \n        modelos b ON c.id_modelo = b.codigo COLLATE utf8_unicode_ci\n    INNER JOIN \n        stock s ON s.cod = c.id_stock COLLATE utf8_unicode_ci\n    ORDER BY \n        b.codigo, s.lista1\n;\nEND"
+    ]
   }
 ]
