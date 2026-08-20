@@ -143,7 +143,7 @@
       "ALTER TABLE `acl` ADD COLUMN `_sync_estado` tinyint(1) NOT NULL DEFAULT '0'",
       "ALTER TABLE `acl` ADD COLUMN `_eliminado`   tinyint(1) NOT NULL DEFAULT '0'",
       "ALTER TABLE `acl` ADD COLUMN `_eliminado_en` datetime(3) DEFAULT NULL",
-      "ALTER TABLE `acl` ADD COLUMN `_uuid` char(36) NOT NULL DEFAULT (uuid())",
+      "ALTER TABLE `acl` ADD COLUMN `_uuid` char(36) NOT NULL DEFAULT ''",
       "ALTER TABLE `acl` ADD COLUMN `_creado_en` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3)",
       "ALTER TABLE `acl` ADD COLUMN `_modificado_en` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3)",
       "ALTER TABLE `acl` ADD COLUMN `_origen` varchar(20) NOT NULL DEFAULT 'MIGRADOR'",
@@ -151,7 +151,7 @@
       "ALTER TABLE `acl2` ADD COLUMN `_sync_estado` tinyint(1) NOT NULL DEFAULT '0'",
       "ALTER TABLE `acl2` ADD COLUMN `_eliminado`   tinyint(1) NOT NULL DEFAULT '0'",
       "ALTER TABLE `acl2` ADD COLUMN `_eliminado_en` datetime(3) DEFAULT NULL",
-      "ALTER TABLE `acl2` ADD COLUMN `_uuid` char(36) NOT NULL DEFAULT (uuid())",
+      "ALTER TABLE `acl2` ADD COLUMN `_uuid` char(36) NOT NULL DEFAULT ''",
       "ALTER TABLE `acl2` ADD COLUMN `_creado_en` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3)",
       "ALTER TABLE `acl2` ADD COLUMN `_modificado_en` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3)",
       "ALTER TABLE `acl2` ADD COLUMN `_origen` varchar(20) NOT NULL DEFAULT 'MIGRADOR'",
@@ -159,7 +159,7 @@
       "ALTER TABLE `stock` ADD COLUMN `_sync_estado` tinyint(1) NOT NULL DEFAULT '0'",
       "ALTER TABLE `stock` ADD COLUMN `_eliminado`   tinyint(1) NOT NULL DEFAULT '0'",
       "ALTER TABLE `stock` ADD COLUMN `_eliminado_en` datetime(3) DEFAULT NULL",
-      "ALTER TABLE `stock` ADD COLUMN `_uuid` char(36) NOT NULL DEFAULT (uuid())",
+      "ALTER TABLE `stock` ADD COLUMN `_uuid` char(36) NOT NULL DEFAULT ''",
       "ALTER TABLE `stock` ADD COLUMN `_creado_en` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3)",
       "ALTER TABLE `stock` ADD COLUMN `_modificado_en` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3)",
       "ALTER TABLE `stock` ADD COLUMN `_origen` varchar(20) NOT NULL DEFAULT 'MIGRADOR'",
@@ -167,7 +167,7 @@
       "ALTER TABLE `depo_st` ADD COLUMN `_sync_estado` tinyint(1) NOT NULL DEFAULT '0'",
       "ALTER TABLE `depo_st` ADD COLUMN `_eliminado`   tinyint(1) NOT NULL DEFAULT '0'",
       "ALTER TABLE `depo_st` ADD COLUMN `_eliminado_en` datetime(3) DEFAULT NULL",
-      "ALTER TABLE `depo_st` ADD COLUMN `_uuid` char(36) NOT NULL DEFAULT (uuid())",
+      "ALTER TABLE `depo_st` ADD COLUMN `_uuid` char(36) NOT NULL DEFAULT ''",
       "ALTER TABLE `depo_st` ADD COLUMN `_creado_en` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3)",
       "ALTER TABLE `depo_st` ADD COLUMN `_modificado_en` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3)",
       "ALTER TABLE `depo_st` ADD COLUMN `_origen` varchar(20) NOT NULL DEFAULT 'MIGRADOR'",
@@ -175,7 +175,7 @@
       "ALTER TABLE `ctacte_d` ADD COLUMN `_sync_estado` tinyint(1) NOT NULL DEFAULT '0'",
       "ALTER TABLE `ctacte_d` ADD COLUMN `_eliminado`   tinyint(1) NOT NULL DEFAULT '0'",
       "ALTER TABLE `ctacte_d` ADD COLUMN `_eliminado_en` datetime(3) DEFAULT NULL",
-      "ALTER TABLE `ctacte_d` ADD COLUMN `_uuid` char(36) NOT NULL DEFAULT (uuid())",
+      "ALTER TABLE `ctacte_d` ADD COLUMN `_uuid` char(36) NOT NULL DEFAULT ''",
       "ALTER TABLE `ctacte_d` ADD COLUMN `_creado_en` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3)",
       "ALTER TABLE `ctacte_d` ADD COLUMN `_modificado_en` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3)",
       "ALTER TABLE `ctacte_d` ADD COLUMN `_origen` varchar(20) NOT NULL DEFAULT 'MIGRADOR'",
@@ -308,7 +308,7 @@
       "ALTER TABLE `ctacte_h` ADD COLUMN `_eliminado`     tinyint(1)   NOT NULL DEFAULT '0'",
       "ALTER TABLE `ctacte_h` ADD COLUMN `_eliminado_en`  datetime(3)  DEFAULT NULL",
       "ALTER TABLE `ctacte_h` ADD COLUMN `update_at`      datetime     NULL",
-      "ALTER TABLE `ctacte_h` ADD COLUMN `_uuid`          char(36)     NOT NULL DEFAULT (uuid())",
+      "ALTER TABLE `ctacte_h` ADD COLUMN `_uuid`          char(36)     NOT NULL DEFAULT ''",
       "ALTER TABLE `ctacte_h` ADD COLUMN `_modificado_en` datetime(3)  NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3)",
       "ALTER TABLE `ctacte_h` ADD COLUMN `_origen`        varchar(20)  NOT NULL DEFAULT 'MIGRADOR'"
     ]
@@ -401,6 +401,13 @@
       "CREATE TABLE IF NOT EXISTS mail_logs (id BIGINT AUTO_INCREMENT PRIMARY KEY, created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, status VARCHAR(16) NOT NULL, error_msg TEXT NULL, mail_from VARCHAR(255) NULL, mail_to TEXT NULL, mail_cc TEXT NULL, mail_bcc TEXT NULL, subject VARCHAR(512) NULL, body LONGTEXT NULL, attachments TEXT NULL, smtp_server VARCHAR(255) NULL, smtp_port INT NOT NULL DEFAULT 0, smtp_ssl TINYINT(1) NOT NULL DEFAULT 0, duration_ms INT NOT NULL DEFAULT 0, KEY idx_created (created_at), KEY idx_status (status)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci",
       "DROP PROCEDURE IF EXISTS `ObtenerDatos`",
       "CREATE PROCEDURE `ObtenerDatos`()\nBEGIN\n    SELECT \n        b.codigo AS cod_modelo, \n        b.nombre AS Modelo, \n        c.id_stock AS cod, \n        s.mat,\n        s.marca,\n        s.moneda,\n        s.plp AS PLP,\n        s.por_prov AS Desc1, \n        s.por_prov2 AS desc2,\n        s.por_prov3 AS Desc3, \n        s.por_prov4 AS desc4,\n        s.pu AS Costo,\n        s.lista1 AS Lista1,\n        s.lista2 AS Lista2,\n        s.lista3 AS Lista3,\n        s.lista4 AS Lista4,\n        s.lista5 AS Lista5,\n        s.lista6 AS Lista6,\n        s.lista7 AS Lista7,\n        s.lista8 AS Lista8\n    FROM \n        modelos_codigos c\n    INNER JOIN \n        modelos b ON c.id_modelo = b.codigo COLLATE utf8_unicode_ci\n    INNER JOIN \n        stock s ON s.cod = c.id_stock COLLATE utf8_unicode_ci\n    ORDER BY \n        b.codigo, s.lista1\n;\nEND"
+    ]
+  },
+  {
+    "version": 34,
+    "descripcion": "Crear tabla contable si no existe (algunos clientes nunca la tuvieron - graba_mysql_contable fallaba con Table doesnt exist)",
+    "sql": [
+      "CREATE TABLE IF NOT EXISTS `contable` (`fecha` date DEFAULT NULL, `c_debe` varchar(8) DEFAULT NULL, `c_haber` varchar(8) DEFAULT NULL, `importe` decimal(15,2) DEFAULT NULL, `detalle` varchar(60) DEFAULT NULL, `moneda` varchar(3) DEFAULT NULL, `dolar` decimal(10,4) DEFAULT NULL, `form_tipo` varchar(3) DEFAULT NULL, `form_nro` varchar(14) DEFAULT NULL, `transfe` varchar(1) DEFAULT NULL, `asi` varchar(1) DEFAULT NULL, `pass` varchar(4) DEFAULT NULL, `sucursal` varchar(4) DEFAULT NULL, `_id` bigint NOT NULL AUTO_INCREMENT, `_uuid` char(36) NOT NULL DEFAULT '', `_creado_en` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3), `_modificado_en` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3), `_sincronizado_en` datetime(3) DEFAULT NULL, `_sync_estado` tinyint(1) NOT NULL DEFAULT '0', `_sync_version` int NOT NULL DEFAULT '1', `_origen` varchar(20) NOT NULL DEFAULT 'MIGRADOR', `_eliminado` tinyint(1) NOT NULL DEFAULT '0', `_eliminado_en` datetime(3) DEFAULT NULL, `_hash` char(32) DEFAULT NULL, `_api_id` varchar(100) DEFAULT NULL, `update_at` datetime DEFAULT NULL, `syncro_at` datetime DEFAULT NULL, `deleted_at` datetime DEFAULT NULL, PRIMARY KEY (`_id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
     ]
   }
 ]
