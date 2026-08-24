@@ -409,5 +409,13 @@
     "sql": [
       "CREATE TABLE IF NOT EXISTS `contable` (`fecha` date DEFAULT NULL, `c_debe` varchar(8) DEFAULT NULL, `c_haber` varchar(8) DEFAULT NULL, `importe` decimal(15,2) DEFAULT NULL, `detalle` varchar(60) DEFAULT NULL, `moneda` varchar(3) DEFAULT NULL, `dolar` decimal(10,4) DEFAULT NULL, `form_tipo` varchar(3) DEFAULT NULL, `form_nro` varchar(14) DEFAULT NULL, `transfe` varchar(1) DEFAULT NULL, `asi` varchar(1) DEFAULT NULL, `pass` varchar(4) DEFAULT NULL, `sucursal` varchar(4) DEFAULT NULL, `_id` bigint NOT NULL AUTO_INCREMENT, `_uuid` char(36) NOT NULL DEFAULT '', `_creado_en` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3), `_modificado_en` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3), `_sincronizado_en` datetime(3) DEFAULT NULL, `_sync_estado` tinyint(1) NOT NULL DEFAULT '0', `_sync_version` int NOT NULL DEFAULT '1', `_origen` varchar(20) NOT NULL DEFAULT 'MIGRADOR', `_eliminado` tinyint(1) NOT NULL DEFAULT '0', `_eliminado_en` datetime(3) DEFAULT NULL, `_hash` char(32) DEFAULT NULL, `_api_id` varchar(100) DEFAULT NULL, `update_at` datetime DEFAULT NULL, `syncro_at` datetime DEFAULT NULL, `deleted_at` datetime DEFAULT NULL, PRIMARY KEY (`_id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
     ]
+  },
+  {
+    "version": 35,
+    "descripcion": "Agregar campo tipo a numem (BANCO/BILLETERA) - carga de billeteras se hace a mano desde el formulario de bancos",
+    "sql": [
+      "ALTER TABLE `numem` ADD COLUMN `tipo` VARCHAR(12) DEFAULT NULL",
+      "UPDATE `numem` SET `tipo` = 'BANCO' WHERE `tipo` IS NULL"
+    ]
   }
 ]
