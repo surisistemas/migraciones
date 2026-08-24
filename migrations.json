@@ -415,6 +415,7 @@
     "descripcion": "Agregar campo tipo a numem (BANCO/BILLETERA) - carga de billeteras se hace a mano desde el formulario de bancos",
     "sql": [
       "ALTER TABLE `numem` ADD COLUMN `tipo` VARCHAR(12) DEFAULT NULL",
+      "UPDATE `numem` SET `tipo` = 'BILLETERA' WHERE `tipo` IS NULL AND UPPER(TRIM(banco)) IN ('MERCADO PAGO','MODO','UALA','NARANJA X','PERSONAL PAY','CUENTA DNI')",
       "UPDATE `numem` SET `tipo` = 'BANCO' WHERE `tipo` IS NULL"
     ]
   }
