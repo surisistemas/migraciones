@@ -418,5 +418,19 @@
       "UPDATE `numem` SET `tipo` = 'BILLETERA' WHERE `tipo` IS NULL AND UPPER(TRIM(banco)) IN ('MERCADO PAGO','MODO','UALA','NARANJA X','PERSONAL PAY','CUENTA DNI')",
       "UPDATE `numem` SET `tipo` = 'BANCO' WHERE `tipo` IS NULL"
     ]
+  },
+  {
+    "version": 36,
+    "descripcion": "Ampliar comision.saldo de decimal(10,2) a decimal(15,2) - el acumulado por vendedor puede superar 9.999.999,99 en clientes de mucho volumen (Error 39 Desbordamiento numerico del lado VFP)",
+    "sql": [
+      "ALTER TABLE `comision` MODIFY COLUMN `saldo` decimal(15,2) DEFAULT NULL"
+    ]
+  },
+  {
+    "version": 37,
+    "descripcion": "Ampliar afd.fcant de decimal(9,2) a decimal(12,2) - el cursor afp (oc.SCT y otros) permite cantidades mayores y afd debe poder recibirlas sin desbordar (Error 39 en OC_DETALLE.txtcant)",
+    "sql": [
+      "ALTER TABLE `afd` MODIFY COLUMN `fcant` decimal(12,2) DEFAULT NULL"
+    ]
   }
 ]
