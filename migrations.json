@@ -432,5 +432,30 @@
     "sql": [
       "ALTER TABLE `afd` MODIFY COLUMN `fcant` decimal(12,2) DEFAULT NULL"
     ]
+  },
+  {
+    "version": 38,
+    "descripcion": "Agregar propio a recibo_cobro - distingue cheques propios de terceros para analisis de credito. titular/cuit_doc/fecha_vto/cod_bco ya existian sin usarse, se empiezan a llenar desde graba_mysql_recibo_cobro sin cambiar la firma para los demas medios de pago",
+    "sql": [
+      "ALTER TABLE `recibo_cobro` ADD COLUMN `propio` tinyint(1) DEFAULT NULL"
+    ]
+  },
+  {
+    "version": 39,
+    "descripcion": "Ampliar rem.np_oc y rem.np_oc2 de VARCHAR(100) (migracion 15) a VARCHAR(255) - son listas de numeros de OC concatenados con espacios que pueden superar los 100 caracteres en remitos con muchas ordenes de compra (MYSQL_ERR 1526 Data too long for column np_oc2)",
+    "sql": [
+      "ALTER TABLE `rem` MODIFY COLUMN `np_oc`  VARCHAR(255)",
+      "ALTER TABLE `rem` MODIFY COLUMN `np_oc2` VARCHAR(255)"
+    ]
+  },
+  {
+    "version": 40,
+    "descripcion": "Agregar indices en identify/codigo para ctacte_d y ctacte_h - hoy solo tienen PK en _id, y funciones.prg hace UPDATE ... WHERE identify=X por cada fila de saldo (full table scan). sincro_saldos_ctacte.prg ya los crea al vuelo (idx_sincro_*) cuando se ejecuta ese script puntual, pero el camino de escritura diario no depende de eso, asi que se agregan de forma permanente aca. Mismos nombres que sincro_saldos_ctacte.prg para evitar duplicados en las bases donde ya se corrio ese script (si ya existen, esta migracion tira 'Duplicate key name' en ese paso puntual y sigue de largo sin bloquear el resto)",
+    "sql": [
+      "CREATE INDEX idx_sincro_identify ON ctacte_d (identify)",
+      "CREATE INDEX idx_sincro_codigo ON ctacte_d (codigo)",
+      "CREATE INDEX idx_sincro_fo_deleted ON ctacte_d (fo, deleted_at)",
+      "CREATE INDEX idx_sincro_identify ON ctacte_h (identify)"
+    ]
   }
 ]
