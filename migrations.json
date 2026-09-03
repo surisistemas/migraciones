@@ -457,5 +457,15 @@
       "CREATE INDEX idx_sincro_fo_deleted ON ctacte_d (fo, deleted_at)",
       "CREATE INDEX idx_sincro_identify ON ctacte_h (identify)"
     ]
+  },
+  {
+    "version": 41,
+    "descripcion": "Ampliar afd.fcant, ctacte_h.dolar, ctacte_d.comi_reg2 y stock.desc_fin al maximo entre lo que ya tenia la base de Gallucci (ensanchada a mano, sin migracion) y lo que pedian las migraciones 33/37 - se detecto al correr 'Verificar integridad' en Gallucci: el schema.json (reconstruido fielmente desde el historial de migraciones) queria achicar estas 4 columnas por debajo de lo que la base ya tenia en produccion, con riesgo real de truncar datos. Se agranda para todos los clientes asi ningun otro pasa por lo mismo",
+    "sql": [
+      "ALTER TABLE `afd` MODIFY COLUMN `fcant` DECIMAL(13,3)",
+      "ALTER TABLE `ctacte_h` MODIFY COLUMN `dolar` DECIMAL(15,4)",
+      "ALTER TABLE `ctacte_d` MODIFY COLUMN `comi_reg2` DECIMAL(14,4)",
+      "ALTER TABLE `stock` MODIFY COLUMN `desc_fin` DECIMAL(6,2)"
+    ]
   }
 ]
