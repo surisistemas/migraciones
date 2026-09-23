@@ -467,5 +467,23 @@
       "ALTER TABLE `ctacte_d` MODIFY COLUMN `comi_reg2` DECIMAL(14,4)",
       "ALTER TABLE `stock` MODIFY COLUMN `desc_fin` DECIMAL(6,2)"
     ]
+  },
+  {
+    "version": 42,
+    "descripcion": "ped_web_pagos: desglose financiero de Mercado Pago y campos de conciliacion con el ERP. Espeja la migracion v42 que ya se aplico en la nube (backend). payment_id pasa a NULL-able porque solo se completa cuando Mercado Pago devuelve el id real de cobro (11-13 digitos); antes el backend ponia ahi el numero de orden de ML (16 digitos), que no sirve para conciliar contra el extracto. conciliado/fnfact/cod_bco/fec_concil los escribe FoxPro al grabar la factura (new_facturador.cobro_web_prefill + graba), el sincronizador nunca los toca. Si alguna columna ya existe, ese paso tira 'Duplicate column name' y sigue de largo",
+    "sql": [
+      "ALTER TABLE `ped_web_pagos` MODIFY COLUMN `payment_id` VARCHAR(50) NULL DEFAULT NULL",
+      "ALTER TABLE `ped_web_pagos` ADD COLUMN `pack_id` VARCHAR(50) NULL DEFAULT NULL",
+      "ALTER TABLE `ped_web_pagos` ADD COLUMN `costo_envio` DECIMAL(12,2) NOT NULL DEFAULT 0.00",
+      "ALTER TABLE `ped_web_pagos` ADD COLUMN `date_approved` DATETIME NULL DEFAULT NULL",
+      "ALTER TABLE `ped_web_pagos` ADD COLUMN `money_release_date` DATETIME NULL DEFAULT NULL",
+      "ALTER TABLE `ped_web_pagos` ADD COLUMN `monto_devuelto` DECIMAL(12,2) NOT NULL DEFAULT 0.00",
+      "ALTER TABLE `ped_web_pagos` ADD COLUMN `estado_detalle` VARCHAR(50) NULL DEFAULT NULL",
+      "ALTER TABLE `ped_web_pagos` ADD COLUMN `conciliado` TINYINT NOT NULL DEFAULT 0",
+      "ALTER TABLE `ped_web_pagos` ADD COLUMN `fnfact` VARCHAR(20) NULL DEFAULT NULL",
+      "ALTER TABLE `ped_web_pagos` ADD COLUMN `cod_bco` VARCHAR(2) NULL DEFAULT NULL",
+      "ALTER TABLE `ped_web_pagos` ADD COLUMN `fec_concil` DATETIME NULL DEFAULT NULL",
+      "CREATE INDEX idx_pwp_conciliado ON ped_web_pagos (id_ped, conciliado)"
+    ]
   }
 ]
