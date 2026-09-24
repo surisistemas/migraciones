@@ -485,5 +485,17 @@
       "ALTER TABLE `ped_web_pagos` ADD COLUMN `fec_concil` DATETIME NULL DEFAULT NULL",
       "CREATE INDEX idx_pwp_conciliado ON ped_web_pagos (id_ped, conciliado)"
     ]
+  },
+  {
+    "version": 43,
+    "descripcion": "ped_local: datos de la factura con la que se cerro el pedido web. Hasta ahora new_facturador solo actualizaba cod_estado ('03' pendiente / '04' facturado) y el numero de comprobante no salia del ERP, asi que del lado de Suri no habia forma de linkear el pedido con su factura y todos figuraban 'Sin facturar'. FoxPro completa estos campos al grabar la factura y el sincronizador los sube a ped_web. fact_nro va con punto de venta y guion (ej. 0012-00068725), por eso VARCHAR y no INT",
+    "sql": [
+      "ALTER TABLE `ped_local` ADD COLUMN `fact_nro` VARCHAR(20) NULL DEFAULT NULL",
+      "ALTER TABLE `ped_local` ADD COLUMN `fact_tipo` VARCHAR(3) NULL DEFAULT NULL",
+      "ALTER TABLE `ped_local` ADD COLUMN `fact_letra` VARCHAR(1) NULL DEFAULT NULL",
+      "ALTER TABLE `ped_local` ADD COLUMN `fact_fecha` DATETIME NULL DEFAULT NULL",
+      "ALTER TABLE `ped_local` ADD COLUMN `fact_cae` VARCHAR(20) NULL DEFAULT NULL",
+      "CREATE INDEX idx_ped_local_fact_nro ON ped_local (fact_nro)"
+    ]
   }
 ]
