@@ -497,5 +497,14 @@
       "ALTER TABLE `ped_local` ADD COLUMN `fact_cae` VARCHAR(20) NULL DEFAULT NULL",
       "CREATE INDEX idx_ped_local_fact_nro ON ped_local (fact_nro)"
     ]
+  },
+  {
+    "version": 44,
+    "descripcion": "Indices que nunca se crearon: la tabla stock se define en schema.json sin ninguna clave (ni primary key ni indices), asi que todo WHERE cod = ... hace scan completo. Con el ERP escribiendo por GuardarMySql y el sincronizador leyendo al mismo tiempo, InnoDB bloquea casi toda la tabla y salta deadlock (1213); se detecto al comparar stock DBF contra MySQL en Gallucci. Lo mismo en ped_d_local, que solo tiene idx_fcod y se consulta siempre por id_ped_local o id_web. Agregar un indice en InnoDB es online: no bloquea lecturas ni escrituras. Si el indice ya existe, ese paso tira 'Duplicate key name' y sigue de largo, igual que las columnas de la v42",
+    "sql": [
+      "CREATE INDEX idx_stock_cod ON stock (cod)",
+      "CREATE INDEX idx_pdl_ped ON ped_d_local (id_ped_local)",
+      "CREATE INDEX idx_pdl_web ON ped_d_local (id_web)"
+    ]
   }
 ]
