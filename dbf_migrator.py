@@ -193,18 +193,26 @@ SYNC_FIELDS_PG = """\
   syncro_at        TIMESTAMP     NULL,
   deleted_at       TIMESTAMP     NULL"""
 
+# OJO: MySQL NO soporta "CREATE INDEX IF NOT EXISTS" (eso es MariaDB y
+# PostgreSQL). Estas plantillas lo usaban, asi que en MySQL fallaban las cuatro
+# por error de sintaxis y el except de mas abajo se lo tragaba en silencio: el
+# log decia "0/4 indices creados" y nadie lo miraba. Por eso ninguna tabla
+# tenia indices de sincronizacion. Si el indice ya existe, MySQL devuelve 1061
+# (Duplicate key name) y eso se trata como exito.
+#
+# idx_sync es compuesto y se llama igual que en la migracion v45 de
+# migrations.json, para que una tabla creada por el migrador y una arreglada
+# por la migracion queden identicas.
 SYNC_INDEXES_MYSQL = [
-    "CREATE UNIQUE INDEX IF NOT EXISTS `idx_{t}_uuid`        ON `{t}` (`_uuid`)",
-    "CREATE        INDEX IF NOT EXISTS `idx_{t}_mod`         ON `{t}` (`_modificado_en`)",
-    "CREATE        INDEX IF NOT EXISTS `idx_{t}_sync_estado` ON `{t}` (`_sync_estado`)",
-    "CREATE        INDEX IF NOT EXISTS `idx_{t}_eliminado`   ON `{t}` (`_eliminado`)",
+    "CREATE UNIQUE INDEX `idx_{t}_uuid` ON `{t}` (`_uuid`)",
+    "CREATE        INDEX `idx_{t}_mod`  ON `{t}` (`_modificado_en`)",
+    "CREATE        INDEX `idx_sync`     ON `{t}` (`_sync_estado`, `_eliminado`)",
 ]
 
 SYNC_INDEXES_PG = [
     'CREATE UNIQUE INDEX IF NOT EXISTS "idx_{t}_uuid"        ON "{t}" (_uuid)',
     'CREATE        INDEX IF NOT EXISTS "idx_{t}_mod"         ON "{t}" (_modificado_en)',
-    'CREATE        INDEX IF NOT EXISTS "idx_{t}_sync_estado" ON "{t}" (_sync_estado)',
-    'CREATE        INDEX IF NOT EXISTS "idx_{t}_eliminado"   ON "{t}" (_eliminado)',
+    'CREATE        INDEX IF NOT EXISTS "idx_sync"            ON "{t}" (_sync_estado, _eliminado)',
 ]
 
 CAMPOS_INFO = [
@@ -849,11 +857,21 @@ class MigrationWorker(QThread):
             indexes = SYNC_INDEXES_MYSQL if mysql else SYNC_INDEXES_PG
             idx_ok  = 0
             for tpl in indexes:
+                sql_idx = tpl.format(t=tname)
                 try:
-                    cur.execute(tpl.format(t=tname)); conn.commit(); idx_ok += 1
-                except Exception:
+                    cur.execute(sql_idx); conn.commit(); idx_ok += 1
+                except Exception as e:
                     conn.rollback()
-            self.log.emit(f"  📌 {idx_ok}/4 índices creados")
+                    # 1061 = Duplicate key name: el indice ya estaba, es exito.
+                    # Cualquier otra cosa hay que MOSTRARLA: antes este except
+                    # se tragaba hasta los errores de sintaxis y por eso nunca
+                    # se crearon los indices en ningun cliente.
+                    if "1061" in str(e) or "duplicate key name" in str(e).lower():
+                        idx_ok += 1
+                    else:
+                        self.log.emit(f"  ⚠️ No se pudo crear el índice: {e}")
+                        self.log.emit(f"     SQL: {sql_idx}")
+            self.log.emit(f"  📌 {idx_ok}/{len(indexes)} índices creados")
 
             # INSERT
             # col_names = columnas con nombres largos si DBC disponible
@@ -1455,7 +1473,15 @@ class SchemaUpdaterWorker(QThread):
             cur.execute("SELECT MAX(version) FROM `_schema_version`")
             row = cur.fetchone()
             return row[0] if row and row[0] is not None else 0
-        except Exception:
+        except Exception as e:
+            # Devolver 0 hace que el migrador crea que la base esta virgen y
+            # reaplique TODAS las migraciones. Hoy eso es inofensivo porque son
+            # idempotentes, pero si no se avisa nadie entiende por que de golpe
+            # corrieron 44 migraciones en una base que estaba al dia.
+            log = getattr(self, "log", None)
+            if log is not None:
+                log.emit(f"  ⚠️ No pude leer _schema_version ({e}).")
+                log.emit(f"     Voy a asumir version 0 y reaplicar todo.")
             return 0
 
     def run(self):
@@ -1506,8 +1532,21 @@ class SchemaUpdaterWorker(QThread):
                         self.log.emit(f"     ✅ {sql[:80]}")
                     except Exception as e:
                         err = str(e)
+                        # Estos codigos significan "ya estaba aplicado", no error.
+                        # Son los que hacen que una migracion se pueda correr dos
+                        # veces sin romper nada:
+                        #   1146 = la tabla no existe en esta instalacion
+                        #   1060 = la columna ya existe (ADD COLUMN repetido)
+                        #   1054 = la columna no existe (MODIFY de algo que no esta)
+                        #   1061 = el indice ya existe (CREATE INDEX repetido)
                         if "1146" in err or "doesn't exist" in err.lower():
                             self.log.emit(f"     ⏭  Tabla no existe — omitido")
+                        elif "1060" in err or "duplicate column" in err.lower():
+                            self.log.emit(f"     ⏭  Columna ya existe — omitido")
+                        elif "1054" in err:
+                            self.log.emit(f"     ⏭  Columna no existe — omitido")
+                        elif "1061" in err or "duplicate key name" in err.lower():
+                            self.log.emit(f"     ⏭  Indice ya existe — omitido")
                         else:
                             conn.rollback()
                             self.log.emit(f"     ❌ ERROR: {err}")
@@ -1678,7 +1717,15 @@ class SchemaInitWorker(QThread):
             cur.execute("SELECT MAX(version) FROM `_schema_version`")
             row = cur.fetchone()
             return row[0] if row and row[0] is not None else 0
-        except Exception:
+        except Exception as e:
+            # Devolver 0 hace que el migrador crea que la base esta virgen y
+            # reaplique TODAS las migraciones. Hoy eso es inofensivo porque son
+            # idempotentes, pero si no se avisa nadie entiende por que de golpe
+            # corrieron 44 migraciones en una base que estaba al dia.
+            log = getattr(self, "log", None)
+            if log is not None:
+                log.emit(f"  ⚠️ No pude leer _schema_version ({e}).")
+                log.emit(f"     Voy a asumir version 0 y reaplicar todo.")
             return 0
 
     def run(self):
@@ -1730,15 +1777,21 @@ class SchemaInitWorker(QThread):
                         self.log.emit(f"     ✅ {sql[:80]}")
                     except Exception as e:
                         err = str(e)
-                        # 1146 = tabla no existe → skip
-                        # 1060 = columna ya existe → skip (ADD COLUMN sin IF NOT EXISTS)
-                        # 1054 = columna no existe → skip (MODIFY de columna que no está)
+                        # Estos codigos significan "ya estaba aplicado", no error.
+                        # Son los que hacen que una migracion se pueda correr dos
+                        # veces sin romper nada:
+                        #   1146 = la tabla no existe en esta instalacion
+                        #   1060 = la columna ya existe (ADD COLUMN repetido)
+                        #   1054 = la columna no existe (MODIFY de algo que no esta)
+                        #   1061 = el indice ya existe (CREATE INDEX repetido)
                         if "1146" in err or "doesn't exist" in err.lower():
                             self.log.emit(f"     ⏭  Tabla no existe — omitido")
                         elif "1060" in err or "duplicate column" in err.lower():
                             self.log.emit(f"     ⏭  Columna ya existe — omitido")
                         elif "1054" in err:
                             self.log.emit(f"     ⏭  Columna no existe — omitido")
+                        elif "1061" in err or "duplicate key name" in err.lower():
+                            self.log.emit(f"     ⏭  Indice ya existe — omitido")
                         else:
                             conn.rollback()
                             self.log.emit(f"     ❌ ERROR: {err}")
