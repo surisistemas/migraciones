@@ -506,5 +506,43 @@
       "CREATE INDEX idx_pdl_ped ON ped_d_local (id_ped_local)",
       "CREATE INDEX idx_pdl_web ON ped_d_local (id_web)"
     ]
+  },
+  {
+    "version": 45,
+    "descripcion": "Indice de sincronizacion en las 32 tablas que no lo tienen. El sincronizador consulta siempre por _sync_estado y _eliminado (SELECT * FROM <tabla> WHERE _eliminado = 1 AND _sync_estado = 0 ORDER BY _id LIMIT 5000), pero de las 33 tablas que tienen esas columnas solo ped_local tenia indice. EXPLAIN en Gallucci devuelve possible_keys NULL y key PRIMARY: MySQL recorre la tabla entera en orden de _id para descubrir que no hay nada que sincronizar, y lo repite en cada pasada y en cada tabla. Con contable y ctacte_d cargadas eso deja el disco ocupado de forma permanente; se detecto porque un cliente tardaba 50 segundos (innodb_lock_wait_timeout) por cada UPDATE de saldo al hacer un remito. El indice va (_sync_estado, _eliminado) y no al reves para que sirva tambien a las consultas que filtran solo por _sync_estado; en InnoDB el indice secundario ya termina en la primary key, asi que resuelve el ORDER BY _id sin agregar la columna. Crear un indice en InnoDB es online: no bloquea lecturas ni escrituras. Si el indice ya existe, ese paso tira 'Duplicate key name' y sigue de largo, igual que la v42 y la v44",
+    "sql": [
+      "CREATE INDEX idx_sync ON acl (_sync_estado, _eliminado)",
+      "CREATE INDEX idx_sync ON acl2 (_sync_estado, _eliminado)",
+      "CREATE INDEX idx_sync ON af (_sync_estado, _eliminado)",
+      "CREATE INDEX idx_sync ON af_cobros (_sync_estado, _eliminado)",
+      "CREATE INDEX idx_sync ON af_obs (_sync_estado, _eliminado)",
+      "CREATE INDEX idx_sync ON afd (_sync_estado, _eliminado)",
+      "CREATE INDEX idx_sync ON bancos (_sync_estado, _eliminado)",
+      "CREATE INDEX idx_sync ON cheques (_sync_estado, _eliminado)",
+      "CREATE INDEX idx_sync ON comision (_sync_estado, _eliminado)",
+      "CREATE INDEX idx_sync ON contable (_sync_estado, _eliminado)",
+      "CREATE INDEX idx_sync ON ctacte_d (_sync_estado, _eliminado)",
+      "CREATE INDEX idx_sync ON ctacte_h (_sync_estado, _eliminado)",
+      "CREATE INDEX idx_sync ON da_configuraciones (_sync_estado, _eliminado)",
+      "CREATE INDEX idx_sync ON depo_st (_sync_estado, _eliminado)",
+      "CREATE INDEX idx_sync ON marca (_sync_estado, _eliminado)",
+      "CREATE INDEX idx_sync ON monedas (_sync_estado, _eliminado)",
+      "CREATE INDEX idx_sync ON mov_caja (_sync_estado, _eliminado)",
+      "CREATE INDEX idx_sync ON mstock (_sync_estado, _eliminado)",
+      "CREATE INDEX idx_sync ON ncompro (_sync_estado, _eliminado)",
+      "CREATE INDEX idx_sync ON numem (_sync_estado, _eliminado)",
+      "CREATE INDEX idx_sync ON ped (_sync_estado, _eliminado)",
+      "CREATE INDEX idx_sync ON ped_d (_sync_estado, _eliminado)",
+      "CREATE INDEX idx_sync ON ped_web_meta (_sync_estado, _eliminado)",
+      "CREATE INDEX idx_sync ON ped_web_pagos (_sync_estado, _eliminado)",
+      "CREATE INDEX idx_sync ON pre (_sync_estado, _eliminado)",
+      "CREATE INDEX idx_sync ON pre_d (_sync_estado, _eliminado)",
+      "CREATE INDEX idx_sync ON rem (_sync_estado, _eliminado)",
+      "CREATE INDEX idx_sync ON rem_d (_sync_estado, _eliminado)",
+      "CREATE INDEX idx_sync ON stock (_sync_estado, _eliminado)",
+      "CREATE INDEX idx_sync ON tarje (_sync_estado, _eliminado)",
+      "CREATE INDEX idx_sync ON tarjetas (_sync_estado, _eliminado)",
+      "CREATE INDEX idx_sync ON vendedor (_sync_estado, _eliminado)"
+    ]
   }
 ]

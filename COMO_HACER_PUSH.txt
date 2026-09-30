@@ -1,0 +1,6 @@
+cd C:\Proyectos\migraciones
+copy ruta\schema.json .
+copy ruta\migrations.json .
+git add schema.json migrations.json
+git commit -m "v19 -Se arreglo el tema de la cuenta Cuenta Corriente H que daba un error cuando se Modificaba una cuenta corriente"
+git push

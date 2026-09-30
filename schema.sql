@@ -303,6 +303,48 @@ CREATE TABLE IF NOT EXISTS `afd` (
   PRIMARY KEY (`_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- ── Cobranzas / Tarjetas ─────────────────────────────────────
+CREATE TABLE IF NOT EXISTS `tarje` (
+  `fecha` date DEFAULT NULL,
+  `nro_tarje` varchar(16) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `cupon` varchar(10) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `moneda` varchar(3) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `importe` decimal(12,2) DEFAULT NULL,
+  `estado` varchar(1) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `autoriz` varchar(8) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `factu` varchar(14) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `fechal` date DEFAULT NULL,
+  `lote` varchar(5) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `fecha_liq` date DEFAULT NULL,
+  `liq` varchar(13) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `tarje` varchar(4) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `form_tipo` varchar(3) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `form_nro` varchar(15) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `pass` varchar(4) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `relote` varchar(6) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `id_equi` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `codfact` decimal(3,0) DEFAULT NULL,
+  `ptovta` decimal(5,0) DEFAULT NULL,
+  `nro` decimal(8,0) DEFAULT NULL,
+  `codigo` varchar(4) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `_id` bigint NOT NULL AUTO_INCREMENT,
+  `_uuid` char(36) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT (uuid()),
+  `_creado_en` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `_modificado_en` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
+  `_sincronizado_en` datetime(3) DEFAULT NULL,
+  `_sync_estado` tinyint(1) NOT NULL DEFAULT '0',
+  `_sync_version` int NOT NULL DEFAULT '1',
+  `_origen` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'MIGRADOR',
+  `_eliminado` tinyint(1) NOT NULL DEFAULT '0',
+  `_eliminado_en` datetime(3) DEFAULT NULL,
+  `_hash` char(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `_api_id` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `update_at` datetime DEFAULT NULL,
+  `syncro_at` datetime DEFAULT NULL,
+  `deleted_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- ── Contabilidad ─────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS `contable` (
   `fecha` date DEFAULT NULL,

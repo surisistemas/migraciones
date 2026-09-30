@@ -1,0 +1,12 @@
+# Copias de seguridad automaticas: para eso esta el historial de git
+*.bak_*
+*.bak
+
+# Salidas y logs
+Audita.csv
+*.log
+files.zip
+
+# Python
+__pycache__/
+*.pyc

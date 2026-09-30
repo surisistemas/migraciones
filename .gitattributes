@@ -1,0 +1,3 @@
+# No convertir finales de linea: se edita desde Windows y la conversion
+# automatica hacia que un cambio de 42 lineas apareciera como uno de 2000.
+* -text
