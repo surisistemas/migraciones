@@ -209,6 +209,26 @@ SYNC_INDEXES_MYSQL = [
     "CREATE        INDEX `idx_sync`     ON `{t}` (`_sync_estado`, `_eliminado`)",
 ]
 
+# Tablas en las que el ERP escribe directamente en MySQL, sacadas de los
+# INSERT/UPDATE/DELETE de mysql_facturacion.prg, funciones_mysql.prg y
+# funciones_mysql_ale.prg.
+#
+# Para que sirve: "Sugerir desde schema" recorria SOLO las tablas de
+# schema.json, asi que una tabla en la que el ERP escribe pero que no esta en
+# el schema era invisible. El migrador nunca la creaba y cada INSERT del ERP
+# moria con 1146 "Table doesn't exist", en silencio salvo una linea en Audita.
+# Fue exactamente el caso de perc_ret: graba_mysql_perc_ret() tiene siete
+# lugares que la llaman en el facturador y la tabla no existia en MySQL.
+#
+# Al agregar una tabla nueva a los PRG, agregarla tambien aca: el boton avisa
+# cuando una de estas no esta en el schema.
+TABLAS_QUE_ESCRIBE_EL_ERP = [
+    "af", "af_cobros", "af_obs", "afd", "bancos", "cheques", "comision",
+    "contable", "ctacte_d", "ctacte_h", "depo_st", "mov_caja", "mstock",
+    "perc_ret", "recibo_aplica", "recibo_cab", "recibo_cobro", "rem",
+    "rem_d", "stock", "tarje",
+]
+
 SYNC_INDEXES_PG = [
     'CREATE UNIQUE INDEX IF NOT EXISTS "idx_{t}_uuid"        ON "{t}" (_uuid)',
     'CREATE        INDEX IF NOT EXISTS "idx_{t}_mod"         ON "{t}" (_modificado_en)',
@@ -2055,7 +2075,9 @@ class MainWindow(QMainWindow):
         btn_suggest = QPushButton("🔍  Sugerir desde schema")
         btn_suggest.setToolTip(
             "Compara el schema.json de GitHub con los DBF de una carpeta\n"
-            "y agrega automáticamente los que encuentra.")
+            "y agrega automáticamente los que encuentra.\n\n"
+            "Además avisa si el ERP escribe en alguna tabla que el schema\n"
+            "no tiene: esas nunca se crean y sus INSERT fallan con 1146.")
         btn_suggest.clicked.connect(self._suggest_from_schema)
         gl.addWidget(btn_suggest)
 
@@ -2278,25 +2300,34 @@ class MainWindow(QMainWindow):
         existing_paths = {self.file_list.item(i).data(Qt.ItemDataRole.UserRole)
                           for i in range(self.file_list.count())}
 
+        def _buscar_dbf(tabla):
+            """Busca <tabla>.dbf en la carpeta probando mayusculas/minusculas."""
+            for nombre in [tabla, tabla.upper(), tabla.lower(), tabla.capitalize()]:
+                for ext in (".dbf", ".DBF"):
+                    candidato = os.path.join(carpeta, nombre + ext)
+                    if os.path.exists(candidato):
+                        return candidato
+            return None
+
         for entry in schema:
             tabla = entry["tabla"]
-            # Buscar el DBF con cualquier combinación de mayúsculas/minúsculas
-            path = None
-            for nombre in [tabla, tabla.upper(), tabla.lower(), tabla.capitalize()]:
-                candidato = os.path.join(carpeta, nombre + ".dbf")
-                if os.path.exists(candidato):
-                    path = candidato
-                    break
-                candidato = os.path.join(carpeta, nombre + ".DBF")
-                if os.path.exists(candidato):
-                    path = candidato
-                    break
+            path = _buscar_dbf(tabla)
             if path:
                 encontrados.append((tabla, path))
             else:
                 no_encontrados.append(tabla)
 
-        if not encontrados:
+        # 3b — Tablas en las que el ERP escribe y que el schema NO tiene.
+        # Sin esto el boton no las veia: el migrador nunca las creaba y cada
+        # INSERT del ERP moria con 1146. Ver TABLAS_QUE_ESCRIBE_EL_ERP.
+        tablas_schema = {e["tabla"].lower() for e in schema}
+        huerfanas = []       # (tabla, path o None)
+        for tabla in TABLAS_QUE_ESCRIBE_EL_ERP:
+            if tabla.lower() in tablas_schema:
+                continue
+            huerfanas.append((tabla, _buscar_dbf(tabla)))
+
+        if not encontrados and not huerfanas:
             QMessageBox.information(self, "Sin coincidencias",
                 f"No se encontró ningún DBF del schema en:\n{carpeta}")
             return
@@ -2319,6 +2350,46 @@ class MainWindow(QMainWindow):
         scroll = QScrollArea(); scroll.setWidgetResizable(True)
         inner = QWidget(); inner_layout = QVBoxLayout(inner)
         inner_layout.setSpacing(4)
+
+        # ── Primero las huerfanas: el ERP les escribe y el schema no las tiene.
+        # Van arriba y marcadas porque son las que hay que agregar: mientras no
+        # esten, el migrador no las crea y los INSERT del ERP fallan con 1146.
+        if huerfanas:
+            lbl_h = QLabel(
+                "<b style='color:#f59e0b;'>&#9888; El ERP escribe en estas tablas "
+                "y el schema no las tiene</b><br>"
+                "<span style='color:#94a3b8;'>Mientras no esten en el schema el "
+                "migrador no las crea, y cada INSERT del ERP falla con 1146 "
+                "&laquo;Table doesn't exist&raquo;. Agregalas para que el migrador "
+                "genere su estructura desde el DBF.</span>")
+            lbl_h.setWordWrap(True)
+            inner_layout.addWidget(lbl_h)
+
+            for tabla, path in sorted(huerfanas):
+                if path:
+                    ya_esta = path in existing_paths
+                    chk = QCheckBox(f"  {tabla.ljust(20)}  \u2192  {Path(path).name}")
+                    chk.setChecked(not ya_esta)
+                    chk.setEnabled(not ya_esta)
+                    if ya_esta:
+                        chk.setText(chk.text() + "  (ya agregada)")
+                        chk.setStyleSheet("color:#64748b;")
+                    else:
+                        chk.setStyleSheet("color:#f59e0b; font-weight:bold;")
+                    chk.setProperty("path", path)
+                    inner_layout.addWidget(chk)
+                    checks.append(chk)
+                else:
+                    lbl_nf = QLabel(
+                        f"<span style='color:#ef4444;'>  {tabla}  &mdash; no se "
+                        f"encontro el DBF en esta carpeta</span>")
+                    lbl_nf.setWordWrap(True)
+                    inner_layout.addWidget(lbl_nf)
+
+            sep_h = QLabel("<hr>")
+            inner_layout.addWidget(sep_h)
+            lbl_sch = QLabel("<b>Tablas del schema</b>")
+            inner_layout.addWidget(lbl_sch)
 
         for tabla, path in sorted(encontrados):
             ya_esta = path in existing_paths
