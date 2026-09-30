@@ -22,6 +22,7 @@ Correrlo cada vez que se toca schema.json.
 """
 import io
 import json
+import re
 from datetime import date
 
 SCHEMA_JSON = "schema.json"
@@ -38,9 +39,47 @@ SCHEMA_VERSION_SQL = """CREATE TABLE IF NOT EXISTS `_schema_version` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;"""
 
 
+COLLATION = "utf8mb4_unicode_ci"
+
+
+def revisar_collation(schema):
+    """Avisa si alguna tabla no esta en la collation del resto.
+
+    En MySQL 8 dos columnas de texto con collations distintas no se pueden
+    comparar: un JOIN entre ellas devuelve 1267 Illegal mix of collations.
+    Siete tablas (auditoria, exchange_rates, modelos, modelos_codigos, obras,
+    obras_facturas, relacion_comprobantes) habian quedado en
+    utf8mb4_0900_ai_ci porque sus definiciones se pegaron copiadas de un
+    SHOW CREATE TABLE de un servidor MySQL 8, cuyo default del servidor es esa
+    collation. Se arreglaron en la v48. Este chequeo esta para que la proxima
+    definicion que se pegue no lo reintroduzca en silencio.
+    """
+    malas = []
+    for entry in schema:
+        sql = entry["sql"]
+        # Cualquier collation que no sea la del resto, no solo las utf8mb4:
+        # af_obs_local estaba en utf8mb3_unicode_ci y la version anterior de
+        # este chequeo la salteaba porque solo miraba tablas que ya dijeran
+        # utf8mb4.
+        for encontrada in re.findall(r"COLLATE[= ](\w+)", sql):
+            if encontrada != COLLATION:
+                malas.append(entry["tabla"])
+    return sorted(set(malas))
+
+
 def main():
     with io.open(SCHEMA_JSON, encoding="utf-8") as f:
         schema = json.load(f)
+
+    malas = revisar_collation(schema)
+    if malas:
+        print("ATENCION: estas tablas no usan %s:" % COLLATION)
+        for t in malas:
+            print("   -", t)
+        print("En MySQL 8 no se pueden unir con las demas (error 1267).")
+        print("Arreglalas en schema.json y agrega la migracion que convierta")
+        print("las bases que ya existen. schema.sql se genera igual.")
+        print()
 
     partes = [
         "-- " + "=" * 60,

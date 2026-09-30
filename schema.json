@@ -21,7 +21,7 @@
   },
   {
     "tabla": "af_obs_local",
-    "sql": "CREATE TABLE IF NOT EXISTS `af_obs_local` (\n  `arch` char(3) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,\n  `fnfact` varchar(19) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,\n  `ffact` date DEFAULT NULL,\n  `nro_obs` char(2) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,\n  `obs` varchar(500) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,\n  `id` int NOT NULL AUTO_INCREMENT,\n  `name` varchar(30) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,\n  `migrado` int DEFAULT NULL,\n  PRIMARY KEY (`id`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci"
+    "sql": "CREATE TABLE IF NOT EXISTS `af_obs_local` (\n  `arch` char(3) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,\n  `fnfact` varchar(19) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,\n  `ffact` date DEFAULT NULL,\n  `nro_obs` char(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,\n  `obs` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,\n  `id` int NOT NULL AUTO_INCREMENT,\n  `name` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,\n  `migrado` int DEFAULT NULL,\n  PRIMARY KEY (`id`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
   },
   {
     "tabla": "afd",
@@ -29,7 +29,7 @@
   },
   {
     "tabla": "auditoria",
-    "sql": "CREATE TABLE IF NOT EXISTS `auditoria` (\n  `id` int NOT NULL AUTO_INCREMENT,\n  `fecha` datetime DEFAULT NULL,\n  `comando` char(10) DEFAULT NULL,\n  `data` text,\n  `tabla` varchar(20) DEFAULT NULL,\n  PRIMARY KEY (`id`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci"
+    "sql": "CREATE TABLE IF NOT EXISTS `auditoria` (\n  `id` int NOT NULL AUTO_INCREMENT,\n  `fecha` datetime DEFAULT NULL,\n  `comando` char(10) DEFAULT NULL,\n  `data` text,\n  `tabla` varchar(20) DEFAULT NULL,\n  PRIMARY KEY (`id`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
   },
   {
     "tabla": "bancos",
@@ -65,7 +65,7 @@
   },
   {
     "tabla": "exchange_rates",
-    "sql": "CREATE TABLE IF NOT EXISTS `exchange_rates` (\n  `currency` char(3) NOT NULL,\n  `rate_ars` decimal(18,6) NOT NULL,\n  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n  PRIMARY KEY (`currency`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci"
+    "sql": "CREATE TABLE IF NOT EXISTS `exchange_rates` (\n  `currency` char(3) NOT NULL,\n  `rate_ars` decimal(18,6) NOT NULL,\n  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n  PRIMARY KEY (`currency`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
   },
   {
     "tabla": "marca",
@@ -73,11 +73,11 @@
   },
   {
     "tabla": "modelos",
-    "sql": "CREATE TABLE IF NOT EXISTS `modelos` (\n  `id` bigint unsigned NOT NULL AUTO_INCREMENT,\n  `codigo` char(10) NOT NULL,\n  `nombre` varchar(100) NOT NULL,\n  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,\n  `deleted_at` timestamp NULL DEFAULT NULL,\n  PRIMARY KEY (`id`),\n  UNIQUE KEY `id` (`id`),\n  KEY `nombre` (`nombre`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci"
+    "sql": "CREATE TABLE IF NOT EXISTS `modelos` (\n  `id` bigint unsigned NOT NULL AUTO_INCREMENT,\n  `codigo` char(10) NOT NULL,\n  `nombre` varchar(100) NOT NULL,\n  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,\n  `deleted_at` timestamp NULL DEFAULT NULL,\n  PRIMARY KEY (`id`),\n  UNIQUE KEY `id` (`id`),\n  KEY `nombre` (`nombre`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
   },
   {
     "tabla": "modelos_codigos",
-    "sql": "CREATE TABLE IF NOT EXISTS `modelos_codigos` (\n  `id` int NOT NULL AUTO_INCREMENT,\n  `id_stock` varchar(25) NOT NULL,\n  `id_modelo` char(10) NOT NULL,\n  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,\n  `deleted_at` timestamp NULL DEFAULT NULL,\n  PRIMARY KEY (`id`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci"
+    "sql": "CREATE TABLE IF NOT EXISTS `modelos_codigos` (\n  `id` int NOT NULL AUTO_INCREMENT,\n  `id_stock` varchar(25) NOT NULL,\n  `id_modelo` char(10) NOT NULL,\n  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,\n  `deleted_at` timestamp NULL DEFAULT NULL,\n  PRIMARY KEY (`id`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
   },
   {
     "tabla": "monedas",
@@ -101,11 +101,11 @@
   },
   {
     "tabla": "obras",
-    "sql": "CREATE TABLE IF NOT EXISTS `obras` (\n  `id` bigint unsigned NOT NULL AUTO_INCREMENT,\n  `nombre` varchar(50) NOT NULL,\n  `contacto` varchar(50) NOT NULL,\n  `autorizado` varchar(50) NOT NULL,\n  `domicilio` varchar(50) NOT NULL,\n  `telefono` varchar(50) NOT NULL,\n  `codigo` char(4) NOT NULL,\n  `codigofac` char(4) NOT NULL,\n  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,\n  `updated_at` timestamp NULL DEFAULT NULL,\n  `deleted_at` timestamp NULL DEFAULT NULL,\n  UNIQUE KEY `id` (`id`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci"
+    "sql": "CREATE TABLE IF NOT EXISTS `obras` (\n  `id` bigint unsigned NOT NULL AUTO_INCREMENT,\n  `nombre` varchar(50) NOT NULL,\n  `contacto` varchar(50) NOT NULL,\n  `autorizado` varchar(50) NOT NULL,\n  `domicilio` varchar(50) NOT NULL,\n  `telefono` varchar(50) NOT NULL,\n  `codigo` char(4) NOT NULL,\n  `codigofac` char(4) NOT NULL,\n  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,\n  `updated_at` timestamp NULL DEFAULT NULL,\n  `deleted_at` timestamp NULL DEFAULT NULL,\n  UNIQUE KEY `id` (`id`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
   },
   {
     "tabla": "obras_facturas",
-    "sql": "CREATE TABLE IF NOT EXISTS `obras_facturas` (\n  `fnfact` char(15) NOT NULL,\n  `id_obra` int NOT NULL,\n  `codfact` int NOT NULL,\n  `pventa` int NOT NULL,\n  `numero` int NOT NULL\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci"
+    "sql": "CREATE TABLE IF NOT EXISTS `obras_facturas` (\n  `fnfact` char(15) NOT NULL,\n  `id_obra` int NOT NULL,\n  `codfact` int NOT NULL,\n  `pventa` int NOT NULL,\n  `numero` int NOT NULL\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
   },
   {
     "tabla": "ped",
@@ -157,7 +157,7 @@
   },
   {
     "tabla": "relacion_comprobantes",
-    "sql": "CREATE TABLE IF NOT EXISTS `relacion_comprobantes` (\n  `id` int NOT NULL AUTO_INCREMENT,\n  `codfact` int DEFAULT NULL,\n  `ptovta` int DEFAULT NULL,\n  `nro_cpte` bigint DEFAULT NULL,\n  `tipo_doc` varchar(4) DEFAULT NULL,\n  `ptovta_relacion` int DEFAULT NULL,\n  `cpte_relacion` varchar(20) DEFAULT NULL,\n  `fecha` datetime DEFAULT NULL,\n  `deleted_at` datetime DEFAULT NULL,\n  PRIMARY KEY (`id`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci"
+    "sql": "CREATE TABLE IF NOT EXISTS `relacion_comprobantes` (\n  `id` int NOT NULL AUTO_INCREMENT,\n  `codfact` int DEFAULT NULL,\n  `ptovta` int DEFAULT NULL,\n  `nro_cpte` bigint DEFAULT NULL,\n  `tipo_doc` varchar(4) DEFAULT NULL,\n  `ptovta_relacion` int DEFAULT NULL,\n  `cpte_relacion` varchar(20) DEFAULT NULL,\n  `fecha` datetime DEFAULT NULL,\n  `deleted_at` datetime DEFAULT NULL,\n  PRIMARY KEY (`id`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
   },
   {
     "tabla": "rem",
