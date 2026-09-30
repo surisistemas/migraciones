@@ -225,7 +225,11 @@ CREATE TABLE IF NOT EXISTS `af` (
   `_pdf_subido_en` datetime(3) DEFAULT NULL,
   `_pdf_url` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `_pdf_intentos` tinyint(1) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`_id`)
+  `cae_estado` tinyint(1) NOT NULL DEFAULT '1' COMMENT '0=pendiente 1=autorizada 2=rechazada',
+  `cae_motivo` varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `cae_intentos` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`_id`),
+  KEY `idx_cae_estado` (`cae_estado`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `af_obs` (

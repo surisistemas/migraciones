@@ -544,5 +544,15 @@
       "CREATE INDEX idx_sync ON tarjetas (_sync_estado, _eliminado)",
       "CREATE INDEX idx_sync ON vendedor (_sync_estado, _eliminado)"
     ]
+  },
+  {
+    "version": 46,
+    "descripcion": "Estado del CAE en af. Cuando ARCA no responde, el facturador graba la factura y recien despues pide el CAE: el COMMIT de la transaccion ocurre antes de llamar a Factura_Electronica. Si vuelve sin CAE, el bloque IF Not Empty(m.ObjResp.Cae) se saltea entero y no pasa nada: la factura queda comprometida sin CAE, sin log y sin nada que la distinga de una valida. Se detecto el 29/09 en un cliente donde ARCA no contestaba. cae_estado da ese estado: 0=pendiente (grabada sin CAE, no se imprime ni se entrega), 1=autorizada, 2=rechazada por ARCA. El default es 1 y no 0 a proposito: las facturas que ya existen estan autorizadas y no hay que reclasificarlas. Sigue la convencion de _pdf_estado, que ya usa tinyint con estados en la misma tabla. El indice es para el proceso que barre las pendientes; si ya existe, ese paso tira 'Duplicate key name' (1061) y sigue de largo, igual que la v45.",
+    "sql": [
+      "ALTER TABLE `af` ADD COLUMN `cae_estado` TINYINT(1) NOT NULL DEFAULT 1 COMMENT '0=pendiente 1=autorizada 2=rechazada'",
+      "ALTER TABLE `af` ADD COLUMN `cae_motivo` VARCHAR(250) NULL DEFAULT NULL COMMENT 'Motivo del rechazo o de la pendencia, para revision manual'",
+      "ALTER TABLE `af` ADD COLUMN `cae_intentos` TINYINT(1) NOT NULL DEFAULT 0 COMMENT 'Veces que el proceso de completado consulto a ARCA por esta factura'",
+      "CREATE INDEX `idx_cae_estado` ON `af` (`cae_estado`)"
+    ]
   }
 ]
