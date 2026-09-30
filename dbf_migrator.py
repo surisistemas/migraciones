@@ -604,6 +604,71 @@ class MigrationWorker(QThread):
                     _diag_logged.add(key)
         return tuple(row)
 
+    def _no_nulos_desde_db(self, cur, tname: str) -> dict:
+        """
+        Devuelve {columna: valor_de_relleno} para las columnas NOT NULL sin
+        default de ESTA tabla, leidas de la base real.
+
+        Por que existe: TABLE_DEFAULTS es una lista a mano, tabla por tabla y
+        columna por columna. Todo lo que no este anotado ahi y sea NOT NULL en
+        la base del cliente revienta con 1048 "Column 'x' cannot be null" en
+        cuanto _safe() devuelve None para esa columna. Fue el caso de bonif:
+        en schema.json es DEFAULT NULL en las seis tablas que la tienen, pero
+        en la base del cliente quedo NOT NULL, y _safe() la pasa a None cuando
+        el valor del DBF no entra en el DECIMAL. Nadie va a mantener esa lista
+        al dia para 47 tablas, asi que se pregunta a la base.
+
+        No reemplaza a TABLE_DEFAULTS: eso sigue mandando donde este definido,
+        porque ahi hay decisiones (fechas minimas, flags) que no se deducen
+        del tipo.
+        """
+        rellenos = {}
+        try:
+            cur.execute(
+                "SELECT COLUMN_NAME, DATA_TYPE FROM information_schema.COLUMNS "
+                "WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = %s "
+                "AND IS_NULLABLE = 'NO' AND COLUMN_DEFAULT IS NULL "
+                "AND EXTRA NOT LIKE '%%auto_increment%%'", (tname,))
+            filas = cur.fetchall()
+        except Exception as e:
+            self.log.emit(f"  ⚠️  No se pudo leer la nulabilidad de {tname}: {e}")
+            return rellenos
+
+        for col, dtype in filas:
+            col = str(col).lower()
+            if col.startswith("_"):
+                continue          # columnas de control, las maneja el INSERT
+            d = str(dtype).lower()
+            if d in ("decimal", "int", "bigint", "tinyint", "smallint",
+                     "mediumint", "float", "double", "numeric"):
+                rellenos[col] = 0
+            elif d in ("date",):
+                rellenos[col] = "1900-01-01"
+            elif d in ("datetime", "timestamp"):
+                rellenos[col] = "1900-01-01 00:00:00"
+            elif d in ("varchar", "char", "text", "longtext", "mediumtext",
+                       "tinytext"):
+                rellenos[col] = ""
+            # cualquier otro tipo se deja afuera a proposito: mejor que falle
+            # y se vea, que rellenarlo con algo inventado
+        return rellenos
+
+    def _rellenar_no_nulos(self, row, col_names, nn_map, tname):
+        """Rellena los None que caerian en columnas NOT NULL de la base."""
+        if not nn_map:
+            return row
+        fila = list(row)
+        for i, col in enumerate(col_names):
+            if fila[i] is None and col in nn_map:
+                fila[i] = nn_map[col]
+                key = f"{tname}.{col}(notnull)"
+                if key not in self._defaults_logged:
+                    self.log.emit(
+                        f"  🔧 {tname}.{col} es NOT NULL en la base y venia NULL "
+                        f"del DBF: se graba {nn_map[col]!r}")
+                    self._defaults_logged.add(key)
+        return tuple(fila)
+
     # ── Limpieza de valores ───────────────────────────────────────
     def _safe(self, val, field=None):
         """
@@ -652,8 +717,19 @@ class MigrationWorker(QThread):
                 if int_digits < 1:
                     int_digits = 1
                 max_val = Decimal(10 ** int_digits) - Decimal(10 ** -dec if dec > 0 else 1)
-                # Si excede el rango → None (se logeará como omitido)
+                # Si excede el rango → None.
+                # Esto se hacia en silencio y es como se pierde un dato sin
+                # que nadie se entere: un bonif de 100.00 no entra en
+                # DECIMAL(4,2) (max 99.99), se volvia NULL, y si la columna
+                # era NOT NULL en la base el INSERT moria con 1048 sin decir
+                # de que fila venia. Ahora queda en el log, una vez por campo.
                 if abs(d) > max_val:
+                    key = f"(rango){field.name}"
+                    if key not in self._defaults_logged:
+                        self.log.emit(
+                            f"  ⚠️  {field.name}: {val!r} no entra en "
+                            f"N({l},{dec}) (max {max_val}) → se graba NULL")
+                        self._defaults_logged.add(key)
                     return None
                 return val
             except (TypeError, ValueError, Exception):
@@ -676,6 +752,32 @@ class MigrationWorker(QThread):
         """Extrae el nombre de columna del error MySQL 1264."""
         m = re.search(r"column '(\w+)'", str(error_msg), re.IGNORECASE)
         return m.group(1).lower() if m else ""
+
+    def _fix_column_nullable(self, cur, conn, tname: str, col: str):
+        """Hace nullable una columna NOT NULL que esta rechazando NULLs.
+
+        Se usa como red de seguridad ante el 1048. El caso real fue bonif:
+        en schema.json es DEFAULT NULL en las seis tablas que la tienen, pero
+        en la base del cliente estaba NOT NULL, asi que la base es la que
+        difiere del schema y dejarla nullable es alinearla, no degradarla.
+        Se preserva el tipo tal cual esta en la base.
+        """
+        try:
+            cur.execute(
+                "SELECT COLUMN_TYPE FROM information_schema.COLUMNS "
+                "WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = %s "
+                "AND COLUMN_NAME = %s", (tname, col))
+            fila = cur.fetchone()
+            if not fila:
+                self.log.emit(f"  ⚠️  No encontre el tipo de '{col}' en {tname}")
+                return
+            cur.execute(f"ALTER TABLE `{tname}` MODIFY COLUMN `{col}` {fila[0]} NULL")
+            conn.commit()
+            self.log.emit(f"  🔧 Auto-fix: '{col}' pasa a aceptar NULL "
+                          f"(el schema ya la define nullable)")
+        except Exception as e:
+            conn.rollback()
+            self.log.emit(f"  ⚠️  No se pudo hacer nullable '{col}': {e}")
 
     def _fix_column(self, cur, conn, tname: str, col: str):
         """Convierte una columna a TEXT para aceptar cualquier valor."""
@@ -710,12 +812,20 @@ class MigrationWorker(QThread):
         # ── Auto-fix: convertir columna problemática ──────────────
         fixed_cols = set()
         for _ in range(10):  # máximo 10 columnas a fixear por batch
-            if "Out of range" not in err_str and "1264" not in err_str:
+            es_rango  = ("Out of range" in err_str) or ("1264" in err_str)
+            # 1048 = NOT NULL rechazando un NULL. Antes caia al fallback fila
+            # por fila, que tampoco lo trataba, asi que fallaban las 500 filas
+            # del batch y la reparacion entera se reportaba como fallida.
+            es_notnull = ("cannot be null" in err_str.lower()) or ("1048" in err_str)
+            if not es_rango and not es_notnull:
                 break
             bad = self._extract_bad_column(err_str)
             if not bad or bad in fixed_cols or bad not in col_names:
                 break
-            self._fix_column(cur, conn, tname, bad)
+            if es_notnull:
+                self._fix_column_nullable(cur, conn, tname, bad)
+            else:
+                self._fix_column(cur, conn, tname, bad)
             fixed_cols.add(bad)
 
             # Reintentar batch después del fix
@@ -742,10 +852,15 @@ class MigrationWorker(QThread):
                 except Exception as e3:
                     conn.rollback()
                     row_err = str(e3)
-                    if "Out of range" in row_err or "1264" in row_err:
+                    r_rango   = ("Out of range" in row_err) or ("1264" in row_err)
+                    r_notnull = ("cannot be null" in row_err.lower()) or ("1048" in row_err)
+                    if r_rango or r_notnull:
                         bad = self._extract_bad_column(row_err)
                         if bad and bad not in fixed_cols and bad in col_names:
-                            self._fix_column(cur, conn, tname, bad)
+                            if r_notnull:
+                                self._fix_column_nullable(cur, conn, tname, bad)
+                            else:
+                                self._fix_column(cur, conn, tname, bad)
                             fixed_cols.add(bad)
                             continue
                     break  # error distinto → no reintentar
@@ -921,6 +1036,15 @@ class MigrationWorker(QThread):
                 sql_ins = (f'INSERT INTO "{tname}" ({cs}, _uuid, _origen) '
                            f"VALUES ({ph}, %s, 'MIGRADOR')")
 
+            # Columnas NOT NULL de la base real (ver _no_nulos_desde_db).
+            # Solo MySQL: en PG el information_schema difiere y este camino
+            # no se uso nunca ahi.
+            nn_map = self._no_nulos_desde_db(cur, tname) if mysql else {}
+            if nn_map:
+                self.log.emit(
+                    f"  ℹ️  {len(nn_map)} columna(s) NOT NULL sin default en la base: "
+                    + ", ".join(sorted(nn_map)))
+
             batch = []; batch_sz = 500; row_cnt = 0; err_cnt = 0
             extra_vals = tuple(extra_defaults.values())
             _diag_fila_logged = set()
@@ -937,6 +1061,7 @@ class MigrationWorker(QThread):
                         if len(_diag_fila_logged) >= 10:
                             break
                 row = self._apply_table_defaults(tname, row, col_names)
+                row = self._rellenar_no_nulos(row, col_names, nn_map, tname)
                 # Agregar valores de columnas extra al final de la fila
                 row = row + extra_vals
                 batch.append(row + (str(uuid_lib.uuid4()),))

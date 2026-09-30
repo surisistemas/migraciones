@@ -576,5 +576,12 @@
       "CREATE INDEX `idx_fnfact` ON `obras_facturas` (`fnfact`)",
       "ALTER TABLE `af_obs_local` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"
     ]
+  },
+  {
+    "version": 49,
+    "descripcion": "Indice de busqueda en depo_st. La tabla guarda la existencia por deposito (cod + cod_depo -> cant) y es la que contesta cuanto stock hay de un articulo, pero no tenia ningun indice mas que la PK de _id y el idx_sync que puso la v45: toda busqueda por codigo hacia scan completo. Es el mismo caso que la v44 arreglo en stock y ped_d_local, y a depo_st se le paso. Importa ahora porque al marcar la tabla entera para resincronizar (_sync_estado=0) el sincronizador la empieza a recorrer mientras el ERP escribe, y ese es el caldo que dio los deadlocks del 28/09 y los 1526 del 29/09. El indice es compuesto (cod, cod_depo) en ese orden porque se busca siempre por articulo, con o sin deposito: asi sirve para las dos consultas. Agregar un indice en InnoDB es online, no bloquea lecturas ni escrituras. Si ya existe, el paso tira 1061 Duplicate key name y sigue de largo.",
+    "sql": [
+      "CREATE INDEX `idx_cod` ON `depo_st` (`cod`, `cod_depo`)"
+    ]
   }
 ]

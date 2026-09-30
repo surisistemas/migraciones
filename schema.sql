@@ -669,6 +669,7 @@ CREATE TABLE IF NOT EXISTS `depo_st` (
   `syncro_at` datetime DEFAULT NULL,
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`_id`),
+  KEY `idx_cod` (`cod`,`cod_depo`),
   KEY `idx_sync` (`_sync_estado`,`_eliminado`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
