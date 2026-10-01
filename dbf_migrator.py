@@ -1344,34 +1344,65 @@ SCHEMA_MIGRATIONS_LOCAL = [
 ]
 
 
+BASE_URL_MIGRACIONES = "https://raw.githubusercontent.com/surisistemas/migraciones/main"
+
+
+def _descargar_json(nombre: str, timeout: int):
+    """
+    Baja un JSON del repo publico de migraciones.
+
+    NO manda header Authorization a proposito: si se manda un token vencido o
+    invalido, GitHub responde 404 INCLUSO cuando el archivo es publico, y el
+    404 hace pensar que el archivo no existe. Sin header, un archivo publico
+    responde 200 siempre. El repo es publico justamente para no necesitar
+    ninguna credencial adentro del exe.
+    """
+    import urllib.request, ssl
+    req = urllib.request.Request(
+        f"{BASE_URL_MIGRACIONES}/{nombre}",
+        headers={"User-Agent": "dbf-migrator/1.0", "Cache-Control": "no-cache"},
+    )
+    ctx = ssl.create_default_context()
+    with urllib.request.urlopen(req, timeout=timeout, context=ctx) as resp:
+        return json.loads(resp.read().decode("utf-8"))
+
+
+def _leer_json_local(nombre: str):
+    """
+    Fallback: el mismo archivo al lado del ejecutable. Es lo que salva en
+    servidores de clientes sin salida a internet. Devuelve None si no esta.
+    """
+    ruta = _BASE_DIR / nombre
+    if not ruta.exists():
+        return None
+    try:
+        return json.loads(ruta.read_text(encoding="utf-8"))
+    except Exception as e:
+        logging.warning(f"{nombre} local existe pero no se pudo leer: {e}")
+        return None
+
+
 def _fetch_remote_migrations() -> tuple[list, str]:
     """
-    Descarga las migraciones desde GitHub usando Authorization header.
-    Retorna (lista_migraciones, fuente) donde fuente es 'remoto' o 'local'.
+    Trae las migraciones. Orden: repo publico -> archivo local -> embebidas.
+    Retorna (lista_migraciones, fuente).
     """
     try:
-        import urllib.request
-        import ssl
-        ctx   = ssl.create_default_context()
-        token = "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"
-        url   = "https://raw.githubusercontent.com/surisistemas/migraciones/main/migrations.json"
-        req   = urllib.request.Request(
-            url,
-            headers={
-                "Authorization": f"token {token}",
-                "User-Agent":    "dbf-migrator/1.0",
-                "Cache-Control": "no-cache"
-            }
-        )
-        with urllib.request.urlopen(req, timeout=8, context=ctx) as resp:
-            data = json.loads(resp.read().decode("utf-8"))
+        data = _descargar_json("migrations.json", 8)
         if not isinstance(data, list) or not data:
-            raise ValueError("Formato inválido")
+            raise ValueError("Formato invalido")
         data.sort(key=lambda m: m["version"])
         return data, "remoto"
     except Exception as e:
-        logging.warning(f"No se pudieron descargar migraciones remotas: {e} — usando fallback local")
-        return SCHEMA_MIGRATIONS_LOCAL, "local"
+        logging.warning(f"No se pudieron descargar migraciones remotas: {e}")
+
+    data = _leer_json_local("migrations.json")
+    if isinstance(data, list) and data:
+        data.sort(key=lambda m: m["version"])
+        logging.info("migrations.json leido del disco, al lado del ejecutable")
+        return data, "local (archivo)"
+
+    return SCHEMA_MIGRATIONS_LOCAL, "local (embebido)"
 
 
 # Se carga una vez al iniciar — los workers usan esta lista
@@ -1380,31 +1411,22 @@ SCHEMA_VERSION_LATEST = max(m["version"] for m in SCHEMA_MIGRATIONS)
 
 
 # ── Schema remoto (CREATE TABLE IF NOT EXISTS para bases nuevas) ───
-SCHEMA_URL = (
-    "https://raw.githubusercontent.com/surisistemas/migraciones/main/schema.json"
-)
-
 def _fetch_remote_schema() -> list:
-    """Descarga el schema completo desde GitHub."""
+    """Trae el schema completo. Orden: repo publico -> archivo local."""
     try:
-        import urllib.request, ssl
-        ctx   = ssl.create_default_context()
-        token = "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"
-        req   = urllib.request.Request(
-            SCHEMA_URL,
-            headers={"Authorization": f"token {token}",
-                     "User-Agent": "dbf-migrator/1.0",
-                     "Cache-Control": "no-cache"}
-        )
-        with urllib.request.urlopen(req, timeout=10, context=ctx) as resp:
-            data = json.loads(resp.read().decode("utf-8"))
-        if not isinstance(data, list):
-            raise ValueError("Formato inválido")
+        data = _descargar_json("schema.json", 10)
+        if not isinstance(data, list) or not data:
+            raise ValueError("Formato invalido")
         return data
     except Exception as e:
         logging.warning(f"No se pudo descargar schema remoto: {e}")
-        return []
 
+    data = _leer_json_local("schema.json")
+    if isinstance(data, list) and data:
+        logging.info("schema.json leido del disco, al lado del ejecutable")
+        return data
+
+    return []
 
 
 class IntegrityCheckWorker(QThread):
@@ -1429,7 +1451,7 @@ class IntegrityCheckWorker(QThread):
         # Descargar schema
         schema = _fetch_remote_schema()
         if not schema:
-            self.finished.emit(False, "No se pudo descargar schema.json de GitHub.", [])
+            self.finished.emit(False, "No se pudo obtener schema.json: fallo la descarga y no hay una copia al lado del ejecutable.", [])
             return
 
         # Conectar
@@ -2416,7 +2438,8 @@ class MainWindow(QMainWindow):
         if not schema:
             QMessageBox.warning(self, "Sin schema",
                 "No se pudo descargar el schema.json desde GitHub.\n"
-                "Verificá la conexión a internet.")
+                "Si el servidor no tiene internet, copiá schema.json\n"
+                "en la misma carpeta que el ejecutable y volvé a intentar.")
             return
 
         # 3 — Comparar contra la carpeta
