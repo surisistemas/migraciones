@@ -7,7 +7,7 @@
 --  Para agregar o cambiar una tabla, tocar schema.json y volver a
 --  correr el generador.
 --
---  Generado: 2026-09-30   (47 tablas + _schema_version)
+--  Generado: 2026-10-16   (48 tablas + _schema_version)
 --  Subir a: github.com/surisistemas/migraciones/schema.sql
 -- ============================================================
 
@@ -1850,4 +1850,32 @@ CREATE TABLE IF NOT EXISTS `apr` (
   `saldo_cc`  DECIMAL(15,2) NOT NULL DEFAULT 0.00,
   `update_at` DATETIME      NULL,
   PRIMARY KEY (`codigo`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- plan
+CREATE TABLE IF NOT EXISTS `plan` (
+  `codigo` varchar(8) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `cuenta` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `analitica` tinyint(1) DEFAULT NULL,
+  `rubro` varchar(2) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `ajusta` tinyint(1) DEFAULT NULL,
+  `sumaen` varchar(8) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `_id` bigint NOT NULL AUTO_INCREMENT,
+  `_uuid` char(36) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT (uuid()),
+  `_creado_en` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `_modificado_en` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
+  `_sincronizado_en` datetime(3) DEFAULT NULL,
+  `_sync_estado` tinyint(1) NOT NULL DEFAULT '0',
+  `_sync_version` int NOT NULL DEFAULT '1',
+  `_origen` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'MIGRADOR',
+  `_eliminado` tinyint(1) NOT NULL DEFAULT '0',
+  `_eliminado_en` datetime(3) DEFAULT NULL,
+  `_hash` char(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `_api_id` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `update_at` datetime DEFAULT NULL,
+  `syncro_at` datetime DEFAULT NULL,
+  `deleted_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`_id`),
+  KEY `idx_sync` (`_sync_estado`,`_eliminado`),
+  KEY `idx_plan_codigo` (`codigo`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

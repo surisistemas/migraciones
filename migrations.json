@@ -583,5 +583,33 @@
     "sql": [
       "CREATE INDEX `idx_cod` ON `depo_st` (`cod`, `cod_depo`)"
     ]
+  },
+  {
+    "version": 50,
+    "descripcion": "Crear la tabla plan (plan de cuentas) y los indices de contable que necesitan los informes contables del B2B. El plan de cuentas nunca se habia llevado a MySQL: vivia solo en el DBF, y sin el los informes muestran codigos de cuenta sin nombre ni forma de agrupar. La estructura es el superconjunto de las dos variantes que hay en los clientes: las bases de gestion solo tienen codigo/cuenta/analitica y dejan rubro, ajusta y sumaen en null; las del modulo contable traen las seis, y sumaen es la cuenta padre que permite armar la jerarquia sin deducirla del prefijo del codigo. Los indices de contable son para sumas y saldos: la v45 le puso idx_sync y no tiene ningun otro, asi que hoy cualquier informe por cuenta y periodo recorre la tabla entera",
+    "sql": [
+      "CREATE TABLE IF NOT EXISTS `plan` (`codigo` varchar(8) COLLATE utf8mb4_unicode_ci DEFAULT NULL, `cuenta` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL, `analitica` tinyint(1) DEFAULT NULL, `rubro` varchar(2) COLLATE utf8mb4_unicode_ci DEFAULT NULL, `ajusta` tinyint(1) DEFAULT NULL, `sumaen` varchar(8) COLLATE utf8mb4_unicode_ci DEFAULT NULL, `_id` bigint NOT NULL AUTO_INCREMENT, `_uuid` char(36) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT (uuid()), `_creado_en` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3), `_modificado_en` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3), `_sincronizado_en` datetime(3) DEFAULT NULL, `_sync_estado` tinyint(1) NOT NULL DEFAULT '0', `_sync_version` int NOT NULL DEFAULT '1', `_origen` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'MIGRADOR', `_eliminado` tinyint(1) NOT NULL DEFAULT '0', `_eliminado_en` datetime(3) DEFAULT NULL, `_hash` char(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL, `_api_id` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL, `update_at` datetime DEFAULT NULL, `syncro_at` datetime DEFAULT NULL, `deleted_at` datetime DEFAULT NULL, PRIMARY KEY (`_id`), KEY `idx_sync` (`_sync_estado`,`_eliminado`), KEY `idx_plan_codigo` (`codigo`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci",
+      "CREATE INDEX `idx_contable_debe`  ON `contable` (`c_debe`, `fecha`)",
+      "CREATE INDEX `idx_contable_haber` ON `contable` (`c_haber`, `fecha`)"
+    ]
+  },
+  {
+    "version": 51,
+    "descripcion": "Alinear el campo bonif con el schema: en schema.json esta definido DEFAULT NULL en las seis tablas que lo tienen (afd, ped_d, ped_d_local, pre_d, rem_d, stock), pero en bases de clientes aparece como NOT NULL sin default. Reportado el 08/10/2026 por LOCALFONDO-VALE: el alta de articulos desde Excel fallaba con \"Field 'bonif' doesn't have a default value\" y se perdieron los ~45 articulos del lote. El INSERT del alta no nombra bonif porque ese campo no esta en el STOCK.DBF, asi que MySQL en modo estricto rechaza la fila entera. Es el mismo desajuste que ya habia obligado a agregarle al DBF-Migrador el auto-fix del error 1048 (_fix_column_nullable): aquel auto-fix solo corre durante una migracion, no cuando el ERP inserta, por eso hace falta esta migracion. MODIFY COLUMN es idempotente: si la columna ya es nullable no cambia nada. Si alguna tabla no existe en esa base, el paso tira 1146 y el runner sigue de largo.",
+    "sql": [
+      "ALTER TABLE `stock`       MODIFY COLUMN `bonif` decimal(5,2) NULL DEFAULT NULL",
+      "ALTER TABLE `afd`         MODIFY COLUMN `bonif` decimal(4,2) NULL DEFAULT NULL",
+      "ALTER TABLE `ped_d`       MODIFY COLUMN `bonif` decimal(4,2) NULL DEFAULT NULL",
+      "ALTER TABLE `ped_d_local` MODIFY COLUMN `bonif` decimal(4,2) NULL DEFAULT NULL",
+      "ALTER TABLE `pre_d`       MODIFY COLUMN `bonif` decimal(4,2) NULL DEFAULT NULL",
+      "ALTER TABLE `rem_d`       MODIFY COLUMN `bonif` decimal(5,2) NULL DEFAULT NULL"
+    ]
+  },
+  {
+    "version": 52,
+    "descripcion": "Agregar stock.por_impint: alicuota NOMINAL de impuestos internos del articulo. Se guarda la nominal y el calculo convierte a efectiva con efectiva = nominal / (1 - nominal/100); 9,50 nominal da 10,497238 efectiva. Criterio verificado contra el ejemplo de 1.314.972,38: neto 1.000.000,00 + internos 104.972,38 + IVA 210.000,00, con los internos FUERA de la base del IVA. El nombre lleva el prefijo POR_ y no IMPU_ porque en stock IMPU_ ya es de las imputaciones contables (impu_c / impu_v son varchar(8), codigos de cuenta) y TASA_ tampoco sirve porque tasa_ib es un codigo, no una tasa; los porcentajes de esta tabla son por_prov y por_lista1..8. DEFAULT 0.00 y nullable, no NOT NULL: un campo numerico nuevo en el DBF nace en 0 y no puede ser null, asi que el default 0.00 deja las dos puntas identicas y no ensucia la conciliacion; y al ser nullable, un INSERT que no nombre la columna no puede tirar 1048 como paso con bonif en la v51. Equivalente en el DBF: bloque 111887 de actualizatablas.prg (ExisteCampo STOCK POR_IMPINT N 5 2). Si la columna ya existe el paso tira 1060 y el runner sigue de largo.",
+    "sql": [
+      "ALTER TABLE `stock` ADD COLUMN `por_impint` decimal(5,2) DEFAULT 0.00"
+    ]
   }
 ]
