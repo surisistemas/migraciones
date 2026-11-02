@@ -611,5 +611,12 @@
     "sql": [
       "ALTER TABLE `stock` ADD COLUMN `por_impint` decimal(5,2) DEFAULT 0.00"
     ]
+  },
+  {
+    "version": 53,
+    "descripcion": "Indice compuesto en obras_facturas (codfact, pventa, numero): es por donde se busca realmente. La v48 ya habia puesto idx_fnfact, pero sobre fnfact, que NO se usa en ninguna consulta: ObraDeFactura() y el INSERT de ObraFacturaGrabar() filtran por codfact/pventa/numero, asi que cada busqueda de obra era un scan completo de la tabla, y corre en CADA impresion de factura, remito, pedido y presupuesto. Indice comun y no unique a proposito: un unique seria mejor -ObraFacturaGrabar hace un INSERT pelado sin verificar, asi que se pueden duplicar filas- pero si algun cliente YA tiene duplicados el unique falla y ese cliente se queda sin indice. Primero hay que medir los duplicados con un GROUP BY codfact,pventa,numero HAVING COUNT(*)>1 y recien entonces decidir si se limpia y se pone unique en una migracion posterior. Si el indice ya existe el paso tira 1061 y el runner sigue de largo.",
+    "sql": [
+      "CREATE INDEX `idx_obras_fact` ON `obras_facturas` (`codfact`, `pventa`, `numero`)"
+    ]
   }
 ]
