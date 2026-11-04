@@ -618,5 +618,14 @@
     "sql": [
       "CREATE INDEX `idx_obras_fact` ON `obras_facturas` (`codfact`, `pventa`, `numero`)"
     ]
+  },
+  {
+    "version": 54,
+    "descripcion": "Agregar af.asoc_cod, af.asoc_pv y af.asoc_nro: el comprobante asociado de las notas de credito y debito. Hasta ahora ese dato existia SOLO en pantalla: new_facturador lo arma desde CBO_TCOMPROB / txt_nc_pventa / txt_nc_nrofac, se lo manda a ARCA en F1DetalleCbtesAsoc* y se pierde. Sin el no hay forma de saber a que factura corresponde una nota de credito, y en particular si esa factura era de contado o de cuenta corriente -- hoy eso solo se puede deducir por si la NC dejo o no un renglon en ctacte_d, que funciona pero es indirecto. Se llenan para comprob 'E' y 'D'; en el resto quedan en 0. Default 0 y nullable, igual criterio que por_impint en la v52: un campo numerico nuevo en el DBF nace en 0, asi el espejo queda identico de las dos puntas, y al ser nullable un INSERT que no nombre la columna no puede tirar 1048. Equivalente en el DBF: bloque de actualizatablas.prg (ExisteCampo af asoc_cod/asoc_pv/asoc_nro). Nombres cortos porque un campo DBF admite 10 caracteres. OJO: esto solo sirve hacia adelante, las NC ya emitidas quedan en 0.",
+    "sql": [
+      "ALTER TABLE `af` ADD COLUMN `asoc_cod` int DEFAULT 0",
+      "ALTER TABLE `af` ADD COLUMN `asoc_pv` int DEFAULT 0",
+      "ALTER TABLE `af` ADD COLUMN `asoc_nro` int DEFAULT 0"
+    ]
   }
 ]
